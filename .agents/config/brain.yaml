@@ -1,0 +1,39 @@
+# =============================================================================
+# SKL_AGENT Brain Configuration — NotebookLM as Long-Term Memory
+# =============================================================================
+# Mỗi project có 1 NotebookLM Brain riêng.
+# Chạy /brain-bootstrap để tự động cấu hình notebook_id.
+# =============================================================================
+
+brain:
+  enabled: false                 # Bật sau khi chạy /brain-bootstrap
+  notebook_id: ""                # UUID từ NotebookLM (set bởi /brain-bootstrap)
+  notebook_title: ""             # Tên notebook (set bởi /brain-bootstrap)
+
+  # ─── Chế Độ Tham Vấn ──────────────────────────────────────────────────
+  # auto: Agent tự query Brain khi gặp trigger (không hỏi User)
+  # ask:  Agent hỏi User trước mỗi lần query Brain
+  # off:  Tắt hoàn toàn (không query Brain)
+  consult_mode: "ask"
+
+  # ─── Trigger Từ Khóa ──────────────────────────────────────────────────
+  # Agent sẽ trigger tham vấn Brain khi User mention các cụm từ này
+  consult_triggers:
+    - "theo chuẩn"
+    - "theo quy định"
+    - "dựa vào tài liệu"
+    - "business logic"
+    - "requirements"
+    - "spec"
+    - "policy"
+    - "quy trình"
+
+  # ─── Fallback Khi Brain Offline ────────────────────────────────────────
+  # skip:  Bỏ qua, xử lý bình thường
+  # warn:  Cảnh báo User nhưng vẫn tiếp tục
+  # block: Dừng lại, yêu cầu User fix
+  fallback_if_offline: "warn"
+
+  # ─── Nguồn Đã Nạp (Auto-populated bởi /brain-sync) ────────────────────
+  sources: []
+  last_sync: ""                  # ISO timestamp lần sync gần nhất

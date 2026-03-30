@@ -1,6 +1,6 @@
 # 🧠 SKL_AGENT — AI Framework Template
 
-> **Phiên bản:** 1.1 · Cập nhật: 2026-03-30
+> **Phiên bản:** 2.0 · Cập nhật: 2026-03-30
 > Bộ khung AI Orchestration dùng cho mọi dự án **Data Pipeline** hoặc **App Development**.
 
 `skl_agent` đóng gói Best Practices từ các hệ thống Agent hàng đầu (Antigravity SDK, Gstack, AutoResearchClaw, Skill Generator) thành một **template scaffolding** dùng lại cho mọi dự án.
@@ -16,6 +16,7 @@
 | 📋 **Artifact Data Handoff** | Agent giao tiếp qua Data Specs (không truyền miệng → giảm ảo giác AI) |
 | 🛡️ **Safety Guards** | `/freeze` (khóa scope), `/careful` (chống phá mã/xóa DB), `[READ-ONLY]` cho `1_input/` |
 | 🔌 **NotebookLM MCP** | Đi kèm bộ cài NotebookLM MCP Hybrid v1.0 — 33 tools tiếng Việt, multi-account |
+| 🧠 **Brain Architecture** | NotebookLM = Long-Term Memory + Antigravity = Active Processor → Closed-loop system |
 
 ---
 
@@ -73,6 +74,38 @@ notebooklm-mcp-auth
 
 ---
 
+## 🧠 Brain Architecture (Long-Term Memory)
+
+Biến NotebookLM thành **"Bộ nhớ dài hạn"** cho mỗi project — Agent tự động tham vấn knowledge trước khi xử lý task.
+
+```
+User Task → Agent → Cần domain knowledge?
+                        ├── CÓ → MCP query Brain → Xử lý với grounded context
+                        └── KHÔNG → Xử lý trực tiếp
+```
+
+**Setup Brain cho project:**
+```bash
+/brain-bootstrap    # Tạo notebook Brain + nạp knowledge + chọn mode
+```
+
+**2 chế độ tham vấn:**
+
+| Mode | Hành vi |
+|------|--------|
+| `auto` | Agent tự query Brain khi gặp trigger — không hỏi User |
+| `ask` | Agent hỏi User trước mỗi lần query — User quyết định |
+
+**Multiplication Effect:**
+- Cập nhật specs trong NotebookLM → Agent output thay đổi tức thì
+- Agent không hallucinate business logic — bám sát docs thật
+- Restart session → Brain vẫn giữ nguyên knowledge
+- Mỗi project 1 Brain riêng → context chính xác
+
+> 📖 Chi tiết: [.agents/rules/brain-connector.md](.agents/rules/brain-connector.md)
+
+---
+
 ## 🛠 Nâng Cấp Tự Động
 
 ```bash
@@ -93,33 +126,31 @@ Script tự động `git pull` để lấy thay đổi mới nhất, **chỉ c�
 SKL_AGENT/
 ├── .agents/                    # 🧠 Bộ não AI
 │   ├── config/
-│   │   └── model-routing.yaml  # Cấu hình Dynamic Routing (Tier 1→4)
-│   ├── rules/                  # Quy tắc AI tuân thủ
+│   │   ├── model-routing.yaml  # Dynamic Routing (Tier 1→4)
+│   │   └── brain.yaml          # 🆕 Brain config (NotebookLM connection)
+│   ├── rules/
+│   │   ├── brain-connector.md  # 🆕 Khi nào query Brain (auto/ask/off)
 │   │   ├── coding-standards.md
 │   │   ├── data-handoff.md
 │   │   ├── safety-guard.md
 │   │   └── skill-development.md
-│   ├── skills/                 # Skills riêng cho project
-│   │   ├── excel-professional/ # Xử lý Excel chuyên nghiệp
-│   │   └── viet-chuyen-nghiep/ # Viết tiếng Việt chuẩn mực
-│   └── workflows/              # 11 slash commands
+│   ├── skills/
+│   │   ├── excel-professional/
+│   │   └── viet-chuyen-nghiep/
+│   └── workflows/              # 13 slash commands
+│       ├── brain-bootstrap.md  # 🆕 /brain-bootstrap
+│       ├── brain-sync.md       # 🆕 /brain-sync
 │       ├── best-practices.md   # /best-practices
 │       ├── load-skills.md      # /load-skills
 │       ├── project-status.md   # /project-status
-│       ├── skill-generate.md   # /skill-generate
-│       ├── skill-scaffold.md   # /skill-scaffold
-│       ├── skill-validate.md   # /skill-validate
-│       ├── skill-audit.md      # /skill-audit
-│       ├── skill-compare.md    # /skill-compare
-│       ├── skill-export.md     # /skill-export
-│       ├── skill-simulate.md   # /skill-simulate
-│       └── skill-stats.md      # /skill-stats
-├── libs/                       # 📚 Thư viện đi kèm
+│       ├── skill-*.md          # /skill-generate, audit, validate...
+│       └── ...                 
+├── libs/
 │   └── notebooklm-mcp-hybrid-v1.0.zip
-├── docs/                       # 📖 Tài liệu
+├── docs/
 │   └── skill_extension_integration_guide.md
-├── setup.bat / setup.sh        # Script khởi tạo
-├── update.bat / update.sh      # Script cập nhật
+├── setup.bat / setup.sh
+├── update.bat / update.sh
 └── README.md
 ```
 
@@ -155,11 +186,25 @@ SKL_AGENT/
 
 ## ⚡ Slash Commands
 
+### 🧠 Brain Commands
+
+| Command | Mô tả |
+|---------|-------|
+| `/brain-bootstrap` | Tạo NotebookLM Brain cho project + nạp knowledge + chọn mode |
+| `/brain-sync` | Đồng bộ docs/URLs/text mới vào Brain |
+
+### 🔧 Project Commands
+
 | Command | Mô tả |
 |---------|-------|
 | `/best-practices` | Tra cứu best practices |
 | `/load-skills` | Nạp skill theo loại dự án |
 | `/project-status` | Xem tổng quan dự án |
+
+### 📦 Skill Commands
+
+| Command | Mô tả |
+|---------|-------|
 | `/skill-generate` | Tạo skill mới (phỏng vấn 5 Phase) |
 | `/skill-scaffold` | Tạo skeleton skill nhanh |
 | `/skill-validate` | Kiểm tra SKILL.md hợp lệ |
@@ -176,6 +221,8 @@ SKL_AGENT/
 | Tài liệu | Nội dung |
 |-----------|----------|
 | [Integration Guide](docs/skill_extension_integration_guide.md) | Hướng dẫn tích hợp Skills, MCP Servers, Workflows |
+| [Brain Connector](.agents/rules/brain-connector.md) | 🆕 Cơ chế tham vấn NotebookLM Brain (auto/ask/off) |
+| [Brain Config](.agents/config/brain.yaml) | 🆕 Cấu hình kết nối Brain cho project |
 | [Safety Guard](.agents/rules/safety-guard.md) | Quy tắc bảo vệ `/freeze`, `/careful` |
 | [Data Handoff](.agents/rules/data-handoff.md) | Quy tắc giao tiếp Agent qua Artifact |
 | [Model Routing](.agents/config/model-routing.yaml) | Cấu hình Dynamic Model Selection |
