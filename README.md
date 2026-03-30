@@ -47,7 +47,6 @@ Bộ khung này đã đi kèm một số kỹ năng quan trọng mặc định:
 - `intelligent-routing`: Auto-assign task cho đúng chuyên gia.
 - `excel-professional`: Xử lý tệp .xlsx chuẩn chuyên nghiệp, Data Analysis mạnh mẽ.
 - `viet-chuyen-nghiep`: Kỹ năng viết và format nội dung ngữ pháp chuẩn mực.
-- `claude-code-best-practices`: Kinh nghiệm code tối ưu chuẩn Authropic.
 
 Để học cách thêm/tạo Skill mới, hãy tham khảo `.agents/workflows/skill-generate.md`.
 
