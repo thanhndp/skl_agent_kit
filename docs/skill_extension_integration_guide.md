@@ -1,6 +1,6 @@
 # 🧩 Hướng Dẫn Tích Hợp Skills & Extensions vào Antigravity IDE
 
-> **Phiên bản:** 1.0 — Cập nhật: 2026-03-18
+> **Phiên bản:** 1.1 — Cập nhật: 2026-03-30
 > **Mục tiêu:** Hướng dẫn toàn diện cách thêm, cấu hình, và sử dụng các Skill, Extension, MCP Server vào hệ thống Antigravity IDE.
 
 ---
@@ -11,6 +11,7 @@
 2. [Các loại tích hợp](#2-các-loại-tích-hợp)
 3. [Tích hợp Skills (Office Viewer, PDF, PPTX, DOCX, XLSX)](#3-tích-hợp-skills)
 4. [Tích hợp MCP Servers](#4-tích-hợp-mcp-servers)
+   - [4.2 Cài đặt NotebookLM MCP Hybrid](#42-cài-đặt-notebooklm-mcp-hybrid-đi-kèm-skl_agent)
 5. [Tích hợp Workflows](#5-tích-hợp-workflows)
 6. [Tạo Skill tùy chỉnh](#6-tạo-skill-tùy-chỉnh)
 7. [Best Practices](#7-best-practices)
@@ -225,34 +226,156 @@ pip install python-pptx
 | **Notion** | Notion workspace | Pages, Databases |
 | **PostgreSQL** | Database queries | SQL execution |
 
-### 4.2. Sử dụng NotebookLM MCP
+### 4.2. Cài đặt NotebookLM MCP Hybrid (Đi kèm SKL_AGENT)
 
-NotebookLM MCP cho phép tạo notebook, thêm nguồn, truy vấn AI, và tạo nội dung (audio, video, slides, infographic).
+SKL_AGENT đi kèm bộ cài **NotebookLM MCP Hybrid v1.0** — phiên bản Việt hóa và tối ưu cho Antigravity IDE.
 
-**Xác thực:**
+**File cài đặt:** `libs/notebooklm-mcp-hybrid-v1.0.zip`
+
+**Tính năng nổi bật:**
+- 🇻🇳 **33 tools với mô tả tiếng Việt** — AI hiểu ngữ cảnh tốt hơn
+- 👥 **Multi-Account** — Hỗ trợ 2+ tài khoản Google (`--profile`)
+- 🔍 **account_info** — Tool kiểm tra tài khoản đang sử dụng
+- 📓 Quản lý notebooks, thêm nguồn từ URL/Drive/văn bản
+- 🎧 Tạo podcast, video, infographic, slides, báo cáo
+- 🔎 Deep Research — Nghiên cứu sâu với AI
+
+#### Yêu cầu hệ thống
+
+| Yêu cầu | Chi tiết |
+|----------|----------|
+| **Python** | ≥ 3.10 (khuyến nghị 3.12+) |
+| **Google Chrome** | Dùng để xác thực tài khoản Google |
+| **Tài khoản Google** | Đăng ký miễn phí tại [notebooklm.google.com](https://notebooklm.google.com) |
+
+#### Bước 1: Giải nén và cài đặt
+
 ```bash
-# Phương pháp 1: CLI tự động (ưu tiên)
+# Giải nén file zip
+cd libs/
+unzip notebooklm-mcp-hybrid-v1.0.zip -d notebooklm-mcp-hybrid
+
+# Cài đặt package
+cd notebooklm-mcp-hybrid
+pip install -e .
+```
+
+> [!NOTE]
+> Trên Windows nếu không có `unzip`, dùng PowerShell:
+> ```powershell
+> Expand-Archive -Path libs\notebooklm-mcp-hybrid-v1.0.zip -DestinationPath libs\notebooklm-mcp-hybrid
+> cd libs\notebooklm-mcp-hybrid
+> pip install -e .
+> ```
+
+#### Bước 2: Cấu hình MCP Server
+
+Thêm vào file cấu hình MCP:
+
+- **Antigravity:** `%APPDATA%\antigravity\settings.json` → mục `"mcpServers"`
+- **Claude Desktop:** `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "notebooklm": {
+      "command": "<ĐƯỜNG_DẪN_PYTHON>",
+      "args": ["-m", "notebooklm_mcp_hybrid.server"],
+      "cwd": "<ĐƯỜNG_DẪN_SKL_AGENT>/libs/notebooklm-mcp-hybrid/src"
+    }
+  }
+}
+```
+
+> [!IMPORTANT]
+> Thay `<ĐƯỜNG_DẪN_PYTHON>` bằng kết quả của: `python -c "import sys; print(sys.executable)"`
+> Dùng forward slashes `/` thay vì backslashes `\` trong đường dẫn.
+
+#### Bước 3: Xác thực tài khoản Google
+
+```bash
+# Chạy CLI xác thực
 notebooklm-mcp-auth
 
-# Phương pháp 2: Refresh token
-# Gọi tool: mcp_notebooklm_refresh_auth
+# Chrome sẽ mở → Đăng nhập Google → Truy cập NotebookLM
+# Script tự động lấy cookies và lưu lại
+# ✓ Auth tokens cached to ~/.notebooklm-mcp/auth.json
 ```
 
-**Workflow cơ bản:**
-```
-1. Tạo notebook     → mcp_notebooklm_notebook_create
-2. Thêm nguồn       → notebook_add_url / notebook_add_text / notebook_add_drive
-3. Truy vấn          → notebook_query
-4. Tạo nội dung      → audio_overview_create / slide_deck_create / report_create
-5. Kiểm tra tiến độ  → studio_status
+**Nếu lỗi "command not found":**
+```bash
+python -m notebooklm_mcp_hybrid.auth_cli
 ```
 
-**Ví dụ thực tế:**
+#### Bước 4: Reload IDE và kiểm tra
+
+1. Trong Antigravity: `Ctrl+Shift+P` → "Reload Window"
+2. Test bằng cách yêu cầu AI: *"Liệt kê notebooks của tôi"*
+
+#### Multi-Account Setup (Tùy chọn)
+
+Nếu có nhiều tài khoản Google:
+
+```bash
+# Xác thực từng tài khoản với profile riêng
+notebooklm-mcp-auth --profile work       # → Đăng nhập tài khoản Work
+notebooklm-mcp-auth --profile personal   # → Đăng nhập tài khoản Personal
 ```
-"Tạo notebook về dự án ABC"
-"Thêm URL https://... vào notebook"
-"Hỏi notebook: Tóm tắt nội dung chính?"
-"Tạo podcast từ notebook này"
+
+**Cấu hình 2 server trong MCP config:**
+
+```json
+{
+  "mcpServers": {
+    "notebooklm": {
+      "command": "<PYTHON_PATH>",
+      "args": ["-m", "notebooklm_mcp_hybrid.server"],
+      "cwd": "<PATH>/libs/notebooklm-mcp-hybrid/src",
+      "env": {
+        "NOTEBOOKLM_AUTH_DIR": "~/.notebooklm-mcp/work"
+      }
+    },
+    "notebooklmPersonal": {
+      "command": "<PYTHON_PATH>",
+      "args": ["-m", "notebooklm_mcp_hybrid.server"],
+      "cwd": "<PATH>/libs/notebooklm-mcp-hybrid/src",
+      "env": {
+        "NOTEBOOKLM_AUTH_DIR": "~/.notebooklm-mcp/personal"
+      }
+    }
+  }
+}
+```
+
+> [!WARNING]
+> Antigravity hỗ trợ tối đa 2 MCP servers hoạt động đồng thời.
+
+#### Workflow sử dụng NotebookLM
+
+**Các lệnh cơ bản:**
+
+| Yêu cầu | Tool |
+|---------|--------------|
+| "Liệt kê notebooks của tôi" | `notebook_list` |
+| "Tạo notebook mới về AI" | `notebook_create` |
+| "Thêm URL này vào notebook" | `notebook_add_url` |
+| "Hỏi notebook về chủ đề X" | `notebook_query` |
+| "Nghiên cứu sâu về Y" | `research_start` |
+| "Tạo podcast từ notebook" | `audio_overview_create` |
+| "Tạo video giải thích" | `video_overview_create` |
+| "Tạo infographic" | `infographic_create` |
+
+**Quy trình nghiên cứu sâu:**
+```
+1. research_start(query="chủ đề", mode="deep")   → Bắt đầu (~5 phút, ~40 nguồn)
+2. research_status(notebook_id, max_wait=300)      → Chờ hoàn thành
+3. research_import(notebook_id, task_id)            → Import nguồn tìm được
+```
+
+**Quy trình tạo nội dung Studio:**
+```
+1. audio_overview_create(notebook_id, confirm=True) → Tạo podcast
+2. studio_status(notebook_id)                       → Kiểm tra tiến độ
 ```
 
 ### 4.3. Cấu hình MCP Server mới
@@ -264,6 +387,7 @@ MCP Servers được cấu hình trong Antigravity IDE settings. Mỗi server c�
 | `command` | Lệnh chạy server |
 | `args` | Tham số dòng lệnh |
 | `env` | Biến môi trường (API keys) |
+| `cwd` | Thư mục làm việc (nếu cần) |
 
 > [!IMPORTANT]
 > API keys phải được lưu trong biến môi trường, KHÔNG hardcode trong config.
@@ -496,6 +620,7 @@ pip install pypdf openpyxl pdfplumber python-docx python-pptx reportlab pandas
 | **MCP Servers** | 6 tích hợp sẵn | Config trong IDE |
 | **Workflows** | 10 có sẵn | `.agents/workflows/` |
 | **Office Skills** | 4 (DOCX, XLSX, PPTX, PDF) | Trong global skills |
+| **NotebookLM MCP** | v1.0 (33 tools, Việt hóa) | `libs/notebooklm-mcp-hybrid-v1.0.zip` |
 
 > [!TIP]
 > **Cách nhanh nhất để bắt đầu:** Chỉ cần nói với AI bạn muốn làm gì. Nếu có skill phù hợp, nó sẽ tự kích hoạt. Nếu không, dùng `/skill-generate` để tạo skill mới!
