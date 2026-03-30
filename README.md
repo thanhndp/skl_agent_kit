@@ -1,53 +1,187 @@
-# SKL_AGENT AI Framework Template
+# 🧠 SKL_AGENT — AI Framework Template
 
-`skl_agent` là thư viện kiến trúc AI Orchestration mạnh mẽ, đóng gói những Best Practices từ các hệ thống Agent hàng đầu như Antigravity SDK, Gstack, AutoResearchClaw và Skill Generator. Hệ thống này được thiết kế để áp dụng cho mọi dự án **Data Pipeline** hoặc **App Development** dưới dạng một bộ khung (scaffolding template).
+> **Phiên bản:** 1.1 · Cập nhật: 2026-03-30
+> Bộ khung AI Orchestration dùng cho mọi dự án **Data Pipeline** hoặc **App Development**.
 
-## Điểm nổi bật
-1. **Dynamic Routing & Intelligent Loading**: Tự động đánh giá độ khó Task để chọn Model (Tier 1 -> 4) và tự động tải Skill (Data Analytics hoặc Web Engineering) dựa vào loại dự án.
-2. **Cascade Fallback System**: Cơ chế tự động chống đứt gãy tiến trình. Nếu API hết Quota hoặc gặp lỗi 429, hệ thống tự động fallback tới Model thấp hơn và tự động retry.
-3. **Artifact Data Handoff**: Ép buộc các Agent giao tiếp qua Data Specs (không truyền miệng, hạn chế AI ảo giác).
-4. **Safety Guards**: Tích hợp khiên `/freeze` (Khóa scope lập trình) và `/careful` (Cảnh báo chống phá mã hoặc xóa CSDL), bao gồm cả nguyên tắc **[READ-ONLY]** cho thư mục `1_input` của Data Pipeline.
+`skl_agent` đóng gói Best Practices từ các hệ thống Agent hàng đầu (Antigravity SDK, Gstack, AutoResearchClaw, Skill Generator) thành một **template scaffolding** dùng lại cho mọi dự án.
 
 ---
 
-## 🚀 Cài Đặt và Khởi Tạo Nhanh (Setup)
+## ✨ Điểm nổi bật
 
-Bất cứ khi nào bạn bắt đầu một dự án mới (Data Processing hoặc Code App), hãy mở một thư mục trống và làm theo các bước sau:
+| Tính năng | Mô tả |
+|-----------|-------|
+| 🎯 **Dynamic Routing** | Tự động đánh giá độ khó Task → chọn Model (Tier 1→4), tải Skill phù hợp (Data Analytics / Web Engineering) |
+| 🔄 **Cascade Fallback** | Chống đứt gãy tiến trình — API hết quota (429) → tự động fallback Model thấp hơn + retry |
+| 📋 **Artifact Data Handoff** | Agent giao tiếp qua Data Specs (không truyền miệng → giảm ảo giác AI) |
+| 🛡️ **Safety Guards** | `/freeze` (khóa scope), `/careful` (chống phá mã/xóa DB), `[READ-ONLY]` cho `1_input/` |
+| 🔌 **NotebookLM MCP** | Đi kèm bộ cài NotebookLM MCP Hybrid v1.0 — 33 tools tiếng Việt, multi-account |
 
-**Bước 1: Clone hệ thống não bộ SKL_AGENT**
+---
+
+## 🚀 Cài Đặt Nhanh
+
+### Bước 1: Clone
+
 ```bash
 git clone https://github.com/thanhndp/skl_agent.git .
 ```
 
-**Bước 2: Khởi tạo Cấu trúc (Tự động hóa)**
-- **Windows**: Chạy tệp `setup.bat`
-- **Linux/Mac**: Chạy tệp `./setup.sh`
+### Bước 2: Khởi tạo cấu trúc
 
-Hệ thống sẽ phỏng vấn bạn 1 câu hỏi tương tác để cấu hình các thư mục làm việc chuẩn:
-- Chọn `1`: Hệ thống tạo Folder cho **Data Pipeline** (`1_input`, `2_process`, `3_output`). Khóa bảo vệ `1_input`.
-- Chọn `2`: Hệ thống tạo Folder cho **App Dev** (`src/`, `docs/`, `tests/`).
+```bash
+# Windows
+setup.bat
 
-**Bước 3: Gọi AI Agent**
-Gọi hệ thống Agent của bạn thông qua command IDE (ví dụ: `antigravity`) ở thư mục gốc để bắt đầu làm việc.
+# Linux/Mac
+./setup.sh
+```
+
+Hệ thống phỏng vấn 1 câu hỏi để cấu hình thư mục:
+
+| Chọn | Loại Project | Thư mục tạo ra |
+|------|-------------|-----------------|
+| `1` | **Data Pipeline** | `1_input/` (READ-ONLY), `2_process/`, `3_output/` |
+| `2` | **App Development** | `src/`, `docs/`, `tests/` |
+
+### Bước 3: Gọi AI Agent
+
+Mở IDE tại thư mục gốc → gọi Agent (ví dụ: `antigravity`) để bắt đầu làm việc.
 
 ---
 
-## 🛠 Nâng cấp tự động (Auto-Update Mechanism)
-Template `skl_agent` sẽ liên tục được cập nhật các bộ Skill và Rules từ trung tâm điều hành. Cách để các dự án của bạn (sau khi đã clone) nhận bản update MÀ KHÔNG làm hỏng code `src/` của bạn:
+## 🔌 Cài Đặt NotebookLM MCP (Tùy chọn)
 
-Chạy File: `update.bat`
+SKL_AGENT đi kèm **NotebookLM MCP Hybrid v1.0** — cho phép AI Agent kết nối trực tiếp với Google NotebookLM.
 
-Script này sẽ tự động chạy git pull để lấy những thay đổi mới nhất từ kho lưu trữ `skl_agent`, chỉ áp dụng vào thư mục bộ não `.agents/`.
+**Tính năng:** 🇻🇳 33 tools tiếng Việt · 👥 Multi-Account · 🎧 Tạo podcast/video/slides · 🔎 Deep Research
+
+```bash
+# 1. Giải nén & cài đặt
+# Windows PowerShell:
+Expand-Archive -Path libs\notebooklm-mcp-hybrid-v1.0.zip -DestinationPath libs\notebooklm-mcp-hybrid
+cd libs\notebooklm-mcp-hybrid
+pip install -e .
+
+# 2. Xác thực Google
+notebooklm-mcp-auth
+
+# 3. Reload IDE → Test: "Liệt kê notebooks của tôi"
+```
+
+> 📖 **Hướng dẫn chi tiết:** xem [docs/skill_extension_integration_guide.md](docs/skill_extension_integration_guide.md) — Section 4.2
 
 ---
 
-## 📘 Kho Kỹ Năng (Installed Skills)
-Bộ khung này đã đi kèm một số kỹ năng quan trọng mặc định:
-- `auto-model-selector`: Tự động cân bằng chi phí và độ phức tạp của Model LLM.
-- `intelligent-routing`: Auto-assign task cho đúng chuyên gia.
-- `excel-professional`: Xử lý tệp .xlsx chuẩn chuyên nghiệp, Data Analysis mạnh mẽ.
-- `viet-chuyen-nghiep`: Kỹ năng viết và format nội dung ngữ pháp chuẩn mực.
+## 🛠 Nâng Cấp Tự Động
 
-Để học cách thêm/tạo Skill mới, hãy tham khảo `.agents/workflows/skill-generate.md`.
+```bash
+# Windows
+update.bat
 
-*(Được xây dựng bởi thanhndp)*
+# Linux/Mac
+./update.sh
+```
+
+Script tự động `git pull` để lấy thay đổi mới nhất, **chỉ cập nhật** thư mục bộ não `.agents/` — code `src/` của bạn không bị ảnh hưởng.
+
+---
+
+## 📦 Cấu Trúc Dự Án
+
+```
+SKL_AGENT/
+├── .agents/                    # 🧠 Bộ não AI
+│   ├── config/
+│   │   └── model-routing.yaml  # Cấu hình Dynamic Routing (Tier 1→4)
+│   ├── rules/                  # Quy tắc AI tuân thủ
+│   │   ├── coding-standards.md
+│   │   ├── data-handoff.md
+│   │   ├── safety-guard.md
+│   │   └── skill-development.md
+│   ├── skills/                 # Skills riêng cho project
+│   │   ├── excel-professional/ # Xử lý Excel chuyên nghiệp
+│   │   └── viet-chuyen-nghiep/ # Viết tiếng Việt chuẩn mực
+│   └── workflows/              # 11 slash commands
+│       ├── best-practices.md   # /best-practices
+│       ├── load-skills.md      # /load-skills
+│       ├── project-status.md   # /project-status
+│       ├── skill-generate.md   # /skill-generate
+│       ├── skill-scaffold.md   # /skill-scaffold
+│       ├── skill-validate.md   # /skill-validate
+│       ├── skill-audit.md      # /skill-audit
+│       ├── skill-compare.md    # /skill-compare
+│       ├── skill-export.md     # /skill-export
+│       ├── skill-simulate.md   # /skill-simulate
+│       └── skill-stats.md      # /skill-stats
+├── libs/                       # 📚 Thư viện đi kèm
+│   └── notebooklm-mcp-hybrid-v1.0.zip
+├── docs/                       # 📖 Tài liệu
+│   └── skill_extension_integration_guide.md
+├── setup.bat / setup.sh        # Script khởi tạo
+├── update.bat / update.sh      # Script cập nhật
+└── README.md
+```
+
+---
+
+## 📘 Kho Kỹ Năng (Skills)
+
+### Skills đi kèm
+
+| Skill | Mô tả |
+|-------|--------|
+| `excel-professional` | Xử lý `.xlsx` chuẩn doanh nghiệp — tạo bảng, báo cáo, phân tích dữ liệu |
+| `viet-chuyen-nghiep` | Viết và format nội dung tiếng Việt chuẩn ngữ pháp |
+
+### Skills toàn cục (từ Antigravity IDE)
+
+| Skill | Mô tả |
+|-------|--------|
+| `auto-model-selector` | Tự động cân bằng chi phí/độ phức tạp khi chọn Model LLM |
+| `intelligent-routing` | Auto-assign task cho đúng chuyên gia AI |
+| 580+ skills khác | Xem đầy đủ qua `/project-status` |
+
+### Thêm/tạo Skill mới
+
+```bash
+/skill-generate    # Tạo qua phỏng vấn AI 5 Phase
+/skill-scaffold    # Tạo skeleton nhanh
+```
+
+> 📖 Xem chi tiết: [docs/skill_extension_integration_guide.md](docs/skill_extension_integration_guide.md)
+
+---
+
+## ⚡ Slash Commands
+
+| Command | Mô tả |
+|---------|-------|
+| `/best-practices` | Tra cứu best practices |
+| `/load-skills` | Nạp skill theo loại dự án |
+| `/project-status` | Xem tổng quan dự án |
+| `/skill-generate` | Tạo skill mới (phỏng vấn 5 Phase) |
+| `/skill-scaffold` | Tạo skeleton skill nhanh |
+| `/skill-validate` | Kiểm tra SKILL.md hợp lệ |
+| `/skill-audit` | Audit skill theo 7 nguyên tắc |
+| `/skill-compare` | So sánh 2 phiên bản skill |
+| `/skill-export` | Export skill ra nền tảng khác |
+| `/skill-simulate` | Mô phỏng chạy thử skill |
+| `/skill-stats` | Xem thống kê & Cognitive Load |
+
+---
+
+## 📖 Tài Liệu
+
+| Tài liệu | Nội dung |
+|-----------|----------|
+| [Integration Guide](docs/skill_extension_integration_guide.md) | Hướng dẫn tích hợp Skills, MCP Servers, Workflows |
+| [Safety Guard](.agents/rules/safety-guard.md) | Quy tắc bảo vệ `/freeze`, `/careful` |
+| [Data Handoff](.agents/rules/data-handoff.md) | Quy tắc giao tiếp Agent qua Artifact |
+| [Model Routing](.agents/config/model-routing.yaml) | Cấu hình Dynamic Model Selection |
+
+---
+
+## 📝 License
+
+Private template — Được xây dựng bởi **thanhndp** @ Skyline School.
