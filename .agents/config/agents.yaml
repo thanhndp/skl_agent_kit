@@ -1,0 +1,49 @@
+# =============================================================================
+# SKL_AGENT Multi-Agent Configuration
+# =============================================================================
+# Template — Enable khi project cần chia nhỏ thành domain-specific agents.
+# Orchestrator sẽ route task đến đúng agent dựa trên domain.
+# =============================================================================
+
+multi_agent:
+  enabled: false           # Bật khi project scale cần nhiều agents
+
+  # ─── Agent Definitions ────────────────────────────────────────────────
+  # Mỗi agent = 1 domain chuyên biệt với Brain, tools, rules riêng
+  agents: []
+    # Ví dụ:
+    #
+    # - name: "academic"
+    #   description: "Quản lý học thuật — chương trình, đánh giá, báo cáo"
+    #   domain_keywords: ["điểm", "môn học", "đánh giá", "curriculum", "grade"]
+    #   brain_notebook_id: "<UUID>"
+    #   tools: ["get_grades", "get_curriculum", "generate_report"]
+    #   rules: ["academic-standards.md"]
+    #   priority: 1
+    #
+    # - name: "operations"
+    #   description: "Vận hành — điểm danh, xin phép, cơ sở vật chất"
+    #   domain_keywords: ["nghỉ phép", "điểm danh", "phòng học", "attendance"]
+    #   brain_notebook_id: "<UUID>"
+    #   tools: ["create_leave", "check_attendance", "book_room"]
+    #   rules: ["operations-policy.md"]
+    #   priority: 2
+    #
+    # - name: "finance"
+    #   description: "Tài chính — học phí, thanh toán, hóa đơn"
+    #   domain_keywords: ["học phí", "thanh toán", "hóa đơn", "payment"]
+    #   brain_notebook_id: "<UUID>"
+    #   tools: ["get_payment_status", "generate_invoice"]
+    #   rules: ["finance-policy.md"]
+    #   priority: 3
+
+  # ─── Routing Strategy ─────────────────────────────────────────────────
+  routing:
+    method: "keyword_match"   # keyword_match | llm_classify | hybrid
+    fallback_agent: "default" # Agent mặc định nếu không match domain nào
+    allow_cross_domain: true  # Cho phép agent A gọi tools agent B
+
+  # ─── Communication ────────────────────────────────────────────────────
+  communication:
+    method: "artifact"        # artifact (file-based) | direct (in-memory)
+    handoff_dir: "docs/"      # Thư mục giao tiếp giữa agents

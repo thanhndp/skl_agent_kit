@@ -1,0 +1,55 @@
+# =============================================================================
+# SKL_AGENT Webhook Configuration (n8n / Automation Bridge)
+# =============================================================================
+# Template — Cấu hình khi project có hệ thống automation (n8n, Zapier, etc.)
+# Agent sẽ đọc file này để biết có thể trigger webhook nào.
+# =============================================================================
+
+webhooks:
+  enabled: false           # Bật khi project có automation system
+
+  # ─── Endpoints ────────────────────────────────────────────────────────
+  # Mỗi endpoint = 1 webhook mà Agent có thể trigger
+  endpoints: []
+    # Ví dụ:
+    #
+    # - name: "leave_request"
+    #   description: "Tạo đơn xin nghỉ"
+    #   url: "https://n8n.example.com/webhook/leave"
+    #   method: POST
+    #   auth: "Bearer ${WEBHOOK_TOKEN}"
+    #   payload_schema:
+    #     user_id: "string (required)"
+    #     date: "ISO date (required)"
+    #     reason: "string (required)"
+    #   trigger_keywords: ["xin nghỉ", "nghỉ phép", "leave request"]
+    #   requires_confirmation: true
+    #
+    # - name: "send_notification"
+    #   description: "Gửi thông báo cho user"
+    #   url: "https://n8n.example.com/webhook/notify"
+    #   method: POST
+    #   auth: "Bearer ${WEBHOOK_TOKEN}"
+    #   payload_schema:
+    #     recipient_id: "string (required)"
+    #     message: "string (required)"
+    #     channel: "email | sms | zalo (default: email)"
+    #   trigger_keywords: ["gửi thông báo", "notify", "thông báo cho"]
+    #   requires_confirmation: true
+    #
+    # - name: "create_ticket"
+    #   description: "Tạo ticket hỗ trợ IT"
+    #   url: "https://n8n.example.com/webhook/ticket"
+    #   method: POST
+    #   payload_schema:
+    #     title: "string (required)"
+    #     description: "string (required)"
+    #     priority: "low | medium | high (default: medium)"
+    #   trigger_keywords: ["tạo ticket", "báo lỗi IT", "support request"]
+    #   requires_confirmation: true
+
+  # ─── Security ─────────────────────────────────────────────────────────
+  security:
+    token_env_var: "WEBHOOK_TOKEN"    # Biến môi trường chứa token
+    require_confirmation: true         # Luôn hỏi User trước khi trigger
+    log_all_calls: true                # Ghi log mỗi lần gọi webhook

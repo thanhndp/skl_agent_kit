@@ -1,0 +1,64 @@
+# =============================================================================
+# SKL_AGENT Capability Map
+# =============================================================================
+# Thay thế mode cứng bằng capability-based routing.
+# Agent chọn capability phù hợp nhất theo intent, không expose cho User.
+# =============================================================================
+
+capabilities:
+
+  qa:
+    description: "Trả lời câu hỏi dựa trên knowledge"
+    intent: knowledge_query
+    requires: [brain]
+    optional: [local_files, tools]
+    priority: knowledge_accuracy
+    output: "Câu trả lời rõ ràng, có source attribution"
+
+  summarize:
+    description: "Tóm tắt tài liệu, data, hoặc conversation"
+    intent: [knowledge_query, analysis]
+    requires: [local_files]
+    optional: [brain]
+    priority: conciseness
+    output: "Bản tóm tắt ngắn gọn, structured"
+
+  analyze:
+    description: "Phân tích data, so sánh, đánh giá"
+    intent: analysis
+    requires: [local_files, tools]
+    optional: [brain]
+    priority: accuracy
+    output: "Bảng phân tích, insights, recommendations"
+
+  execute:
+    description: "Thực hiện hành động cụ thể (tạo file, gửi request, chạy lệnh)"
+    intent: action_request
+    requires: [tools, confirmation]
+    optional: [brain]
+    priority: safety
+    output: "Kết quả thực thi + confirmation"
+
+  create:
+    description: "Tạo nội dung mới (code, docs, slides, reports)"
+    intent: creative
+    requires: [skills]
+    optional: [brain, local_files]
+    priority: quality
+    output: "File hoặc nội dung hoàn chỉnh"
+
+  recommend:
+    description: "Đề xuất giải pháp, next steps, action items"
+    intent: [analysis, knowledge_query]
+    requires: [brain, memory]
+    optional: [tools]
+    priority: actionability
+    output: "Danh sách đề xuất có prioritize"
+
+  debug:
+    description: "Tìm và sửa lỗi trong code hoặc config"
+    intent: system
+    requires: [local_files, tools]
+    optional: []
+    priority: correctness
+    output: "Root cause + fix"

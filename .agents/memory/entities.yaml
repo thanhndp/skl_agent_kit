@@ -1,0 +1,44 @@
+# =============================================================================
+# SKL_AGENT Entity Memory
+# =============================================================================
+# Auto-populated by Agent during interactions.
+# Agent thêm entries khi phát hiện thông tin mới về user, project, decisions.
+# KHÔNG xóa entries cũ trừ khi User yêu cầu.
+# =============================================================================
+
+# ─── User Profiles ──────────────────────────────────────────────────────────
+# Lưu thông tin về những người tương tác với Agent
+users: []
+  # Ví dụ:
+  # - id: "user_001"
+  #   name: "Nguyễn Văn A"
+  #   role: "developer"           # developer | manager | admin | user
+  #   preferences:
+  #     language: "vi"            # vi | en
+  #     detail_level: "concise"   # concise | detailed
+  #     output_format: "markdown" # markdown | plain | json
+  #   last_interaction: "2026-03-30"
+  #   notes: "Thích output dạng bảng, không thích văn xuôi dài"
+
+# ─── Project Context Notes ──────────────────────────────────────────────────
+# Các quy ước, decisions, context đặc thù của project
+context_notes: []
+  # Ví dụ:
+  # - key: "naming_convention"
+  #   value: "Dùng camelCase cho JS, snake_case cho Python"
+  #   source: "user_mention"
+  #   date: "2026-03-30"
+  #
+  # - key: "deployment_target"
+  #   value: "Vercel cho frontend, Railway cho backend"
+  #   source: "project_config"
+  #   date: "2026-03-30"
+
+# ─── Interaction History (Summary) ──────────────────────────────────────────
+# Tóm tắt các tương tác quan trọng (KHÔNG lưu raw conversation)
+history: []
+  # Ví dụ:
+  # - date: "2026-03-30"
+  #   summary: "Setup Brain Architecture, deploy v2.0"
+  #   outcome: "success"
+  #   artifacts: ["docs/spec.md", "README.md"]
