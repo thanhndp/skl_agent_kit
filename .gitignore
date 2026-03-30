@@ -1,23 +1,41 @@
-# Python
-__pycache__/
-*.py[cod]
-*.egg-info/
-dist/
-build/
+# SKL_AGENT Master Template Gitignore
+# Bỏ qua mọi dữ liệu phát sinh của User, chỉ duy trì Template hệ thống.
 
-# OS
+# OS generated files
 .DS_Store
 Thumbs.db
-desktop.ini
 
-# IDE
+# Environment variables
+.env
+.env.local
+
+# Data Pipeline Structure (Do not commit user data)
+1_input/
+2_process/
+3_output/
+
+# App Development Structure (Do not commit user source code)
+src/
+docs/
+tests/
+dist/
+build/
+node_modules/
+__pycache__/
+*.pyc
+
+# IDEs
 .vscode/
 .idea/
-*.swp
-*.swo
+.cursor/
 
-# Logs
-*.log
+# Agent History & Logs
+.agents/logs/
+.agents/history/
+.agents/cache/
+.bot.lock
+.antigravity/
 
-# Private
-DEVELOPMENT_LOG.md
+# SQLite databases
+*.db
+*.sqlite3

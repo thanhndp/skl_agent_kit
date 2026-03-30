@@ -1,0 +1,52 @@
+# =============================================================================
+# Auto Model Selector — Configuration Template
+# =============================================================================
+# Copy this file to your project: .agent/config/model-routing.yaml
+# Customize per project to match your team's model preferences and budget.
+# =============================================================================
+
+auto_model:
+  enabled: true
+  notify: true              # Show model recommendations to user
+  auto_switch_via_cli: true # Automatically run CLI command 'antigravity model set <model>'
+  default_tier: 2           # Fallback tier when classification is uncertain
+  cost_priority: balanced   # conservative (save money) | balanced | quality (best output)
+
+  # ─── Model Mapping ────────────────────────────────────────────────────
+  # Map each tier to your preferred model identifier
+  # Common options: flash, haiku, sonnet, pro, opus, opus-thinking, 
+  #                 gpt-4o-mini, gpt-4o, gpt-4.5, deepseek-v3
+  models:
+    tier1: "flash"           # Trivial: typos, formatting, simple Q&A
+    tier2: "sonnet"          # Standard: single component, bug fix, tests
+    tier3: "opus"            # Complex: multi-file refactor, architecture
+    tier4: "opus-thinking"   # Critical: system redesign, production incidents
+
+  # ─── Project-Specific Boosts ──────────────────────────────────────────
+  # Force minimum tier for files matching patterns
+  boosts:
+    - pattern: "*.security.*"
+      min_tier: 3
+      reason: "Security-sensitive code requires advanced reasoning"
+    - pattern: "production/*"
+      min_tier: 3
+      reason: "Production changes need careful analysis"
+    - pattern: "*.test.*"
+      min_tier: 2
+      reason: "Tests need standard coding model at minimum"
+    - pattern: "infrastructure/*"
+      min_tier: 3
+      reason: "Infrastructure changes are high-impact"
+
+  # ─── Quota & Rate Limit Fallbacks (Cascade Chain) ─────────────────────
+  # Automatically switch to a fallback model if the current API throws a
+  # rate limit or out-of-quota error. The agent will traverse this chain
+  # until it finds a working model (e.g., opus -> sonnet -> pro -> flash).
+  quota_fallbacks:
+    enabled: true
+    chain:
+      "opus-thinking": "opus"
+      "opus": "sonnet"
+      "sonnet": "pro"
+      "pro": "flash"
+      "flash": "haiku"  # The absolute bottom baseline
