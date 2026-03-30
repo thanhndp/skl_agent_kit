@@ -16,7 +16,8 @@ Thumbs.db
 
 # App Development Structure (Do not commit user source code)
 src/
-docs/
+docs/*
+!docs/skill_extension_integration_guide.md
 tests/
 dist/
 build/
