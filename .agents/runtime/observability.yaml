@@ -1,0 +1,80 @@
+# =============================================================================
+# Observability — Metrics & Log Points
+# =============================================================================
+# Hook vào: step 4 (classify), step 5 (plan), step 7 (context), step 9 (execute)
+# Mục đích: Biết Agent đang làm gì, performance ra sao, ở đâu bị chậm/fail
+# =============================================================================
+
+observability:
+  enabled: true
+
+  # ─── Metrics cần track ──────────────────────────────────────────────────
+  metrics:
+    intent_accuracy:
+      description: "Tỷ lệ classify đúng intent (dựa trên feedback 👍/👎)"
+      source: feedback-logger
+      target: "> 85%"
+
+    tool_success_rate:
+      description: "Tỷ lệ tool call thành công (không error/timeout)"
+      source: execution logs
+      target: "> 95%"
+
+    token_usage:
+      description: "Số tokens dùng mỗi task (input + output)"
+      track_by: [intent_type, model_tier, capability_chain]
+      alert_if: "> 50000 tokens cho single task"
+
+    fallback_rate:
+      description: "Tần suất cascade fallback (model hoặc knowledge tier)"
+      source: model-routing + knowledge-tiers
+      alert_if: "> 20% tasks trigger fallback"
+
+    plan_completion_rate:
+      description: "Tỷ lệ hoàn thành execution plan đầy đủ (không skip step)"
+      source: state-machine
+      target: "> 90%"
+
+    response_quality:
+      description: "Tỷ lệ 👍 trên tổng feedback"
+      source: feedback-logger
+      target: "> 80%"
+
+  # ─── Log Points (Hook vào pipeline) ─────────────────────────────────────
+  log_points:
+
+    step_4_classify:
+      what: "Intent classification result"
+      log: [intents, confidence, fallback_triggered]
+      when: always
+
+    step_5_plan:
+      what: "Execution plan created"
+      log: [plan_template, step_count, capabilities_selected]
+      when: always
+
+    step_7_context:
+      what: "Context build result"
+      log: [sources_used, token_budget, dedup_removed, memory_items]
+      when: always
+
+    step_9_execute:
+      what: "Execution result per step"
+      log: [step_name, tool_called, success, duration_hint, error_if_any]
+      when: always
+
+    step_12_feedback:
+      what: "Task feedback"
+      log: [feedback_score, failure_pattern, route_used]
+      when: feedback_received
+
+  # ─── Output ─────────────────────────────────────────────────────────────
+  output:
+    # Ghi vào agent-log.md (đã có trong feedback-logger)
+    destination: "docs/agent-log.md"
+    format: "append_entry"
+
+    # Summary cuối mỗi session (tùy chọn)
+    session_summary:
+      enabled: true
+      include: [total_tasks, avg_tokens, fallback_count, feedback_ratio]

@@ -1,0 +1,89 @@
+# =============================================================================
+# Cache — Giảm 50-80% cost bằng cách cache kết quả lặp lại
+# =============================================================================
+# Hook vào: trước step 9 (execute) — check cache trước khi gọi tool/Brain
+# Nguyên tắc: Cache KHÔNG thay đổi output — chỉ skip bước đã có kết quả
+# =============================================================================
+
+cache:
+  enabled: true
+
+  # ─── Layers ─────────────────────────────────────────────────────────────
+
+  query_cache:
+    enabled: true
+    description: "Cache Brain query results — cùng câu hỏi không cần query lại"
+    ttl: 3600            # 1 giờ — Brain knowledge ít thay đổi trong session
+    max_entries: 50
+    match_strategy: semantic_similar   # Không cần exact match, similar enough
+    similarity_threshold: 0.9
+
+    # Invalidate khi
+    invalidate_on:
+      - brain_sync         # /brain-sync chạy → cache Brain hết hiệu lực
+      - source_added       # Thêm source mới vào notebook
+      - manual_clear       # User yêu cầu clear
+
+  tool_result_cache:
+    enabled: true
+    description: "Cache tool results — cùng file/query không đọc lại"
+    ttl: 300             # 5 phút — file/data có thể thay đổi nhanh hơn
+    max_entries: 30
+
+    # Chỉ cache tools idempotent (đọc, không ghi)
+    cacheable_tools:
+      - read_file
+      - list_dir
+      - grep_search
+      - view_file
+      - notebook_query
+      - notebook_describe
+      - source_describe
+      - source_get_content
+
+    # KHÔNG BAO GIỜ cache (side effects)
+    never_cache:
+      - write_to_file
+      - run_command
+      - replace_file_content
+      - notebook_add_text
+      - notebook_add_url
+      - research_start
+
+    invalidate_on:
+      - file_modified      # File target bị sửa → cache entry hết hiệu lực
+      - tool_error         # Tool error → xóa cache, retry fresh
+
+  context_cache:
+    enabled: true
+    description: "Cache context build result — cùng intent pattern reuse context"
+    ttl: 1800            # 30 phút
+    max_entries: 10
+    match_by: [intent_labels, source_ids]
+
+  # ─── Cache Behavior ────────────────────────────────────────────────────
+
+  behavior:
+    # Trước step 9: check cache
+    pre_execute:
+      - check_query_cache
+      - check_tool_cache
+
+    # Cache hit → skip tool call, dùng cached result
+    on_hit:
+      action: use_cached
+      log: "📦 Cache hit: {cache_layer} — skipped {tool_name}"
+
+    # Cache miss → execute normally, save result
+    on_miss:
+      action: execute_and_cache
+      log: "🔍 Cache miss: {cache_layer} — executing {tool_name}"
+
+    # User có thể force fresh
+    force_fresh:
+      trigger: "user says 'fresh', 'reload', 'không dùng cache'"
+      action: bypass_all_cache
+
+  # ─── Cost Impact ────────────────────────────────────────────────────────
+  # Ước tính: Brain query = ~2000 tokens, file read = ~500 tokens
+  # 10 cached queries/session = tiết kiệm ~20,000 tokens (~50% cost)

@@ -1,0 +1,98 @@
+# =============================================================================
+# Cost Control — Tránh đốt tiền, dùng đúng model cho đúng task
+# =============================================================================
+# Hook vào: step 6 (capability + model select)
+# Nguyên tắc: Simple task → cheap model · Complex task → strong model
+# =============================================================================
+
+cost_control:
+  enabled: true
+
+  # ─── Token Budget (Dynamic) ─────────────────────────────────────────────
+  # Không fix cứng — budget thay đổi theo intent complexity
+  token_budget:
+    strategy: dynamic
+
+    by_intent:
+      simple_qa:
+        max_input: 2000
+        max_output: 500
+        preferred_model: tier1
+        # Ví dụ: "SKL là gì?", "Học phí bao nhiêu?"
+
+      knowledge_query:
+        max_input: 5000
+        max_output: 2000
+        preferred_model: tier2
+        # Ví dụ: "Tiêu chí đánh giá môn Toán lớp 5?"
+
+      analysis:
+        max_input: 15000
+        max_output: 5000
+        preferred_model: tier2
+        # Ví dụ: "Phân tích kết quả học tập lớp 3A"
+
+      action_request:
+        max_input: 10000
+        max_output: 3000
+        preferred_model: tier2
+        # Ví dụ: "Tạo file Excel điểm học sinh"
+
+      multi_step:
+        max_input: 20000
+        max_output: 8000
+        preferred_model: tier3
+        # Ví dụ: "Phân tích điểm rồi gửi báo cáo phụ huynh"
+
+      critical:
+        max_input: 50000
+        max_output: 15000
+        preferred_model: tier4
+        # Ví dụ: "Thiết kế lại hệ thống chấm điểm"
+
+  # ─── Model Selection Rules ──────────────────────────────────────────────
+  model_selection:
+    # Ưu tiên model rẻ nhất đủ capability
+    principle: "cheapest_sufficient"
+
+    rules:
+      - if: "intent == simple_qa AND confidence > 0.9"
+        then: tier1
+        reason: "Câu hỏi đơn giản, model nhẹ đủ"
+
+      - if: "intent includes action_request"
+        then: "min tier2"
+        reason: "Tool calling cần model đủ mạnh"
+
+      - if: "file matches security/* OR production/*"
+        then: "min tier3"
+        reason: "Sensitive files cần careful reasoning"
+
+      - if: "multi_step AND step_count > 3"
+        then: "min tier3"
+        reason: "Multi-step phức tạp cần strong planning"
+
+      - if: "context_length > 30000 tokens"
+        then: "tier3 or tier4"
+        reason: "Long context cần model xử lý tốt"
+
+  # ─── Cost Alerts ────────────────────────────────────────────────────────
+  alerts:
+    warn_if:
+      - "tier4 model dùng cho simple_qa"
+      - "token usage > 30000 cho single task"
+      - "3+ consecutive tier3/4 tasks trong 10 phút"
+
+    warn_message: |
+      💰 **Cost alert:** Task này dùng {model} ({token_count} tokens).
+      Đề xuất: {suggestion}
+
+  # ─── Context Compression ────────────────────────────────────────────────
+  # Giảm tokens bằng cách compress context trước khi gửi model
+  compression:
+    enabled: true
+    strategies:
+      - deduplicate_memory    # Xóa memory items trùng (đã có trong context-builder)
+      - truncate_tool_output  # Tool output > 5000 chars → summarize
+      - skip_low_relevance    # Memory items relevance < 0.4 → bỏ
+      - compress_brain_response  # Brain response dài → extract key points
