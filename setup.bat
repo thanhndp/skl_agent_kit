@@ -6,51 +6,51 @@ echo ==================================================
 echo         SKL AGENT KIT INIT SYSTEM
 echo ==================================================
 echo.
-echo Chào mừng bạn đến với SKL AGENT KIT Framework!
-echo Hãy chọn mô hình dự án bạn muốn thiết lập:
+echo Chao mung ban den voi SKL AGENT KIT Framework!
+echo Hay chon mo hinh du an ban muon thiet lap:
 echo.
-echo [1] Data Pipeline (Xử lý dữ liệu)
-echo     - Mục đích: Crawl, Xử lý dữ liệu lớn, ETL, Phân tích.
-echo     - Cấu trúc: 1_input (chỉ đọc), 2_process, 3_output.
+echo [1] Data Pipeline (Xu ly du lieu)
+echo     - Muc dich: Crawl, Xu ly du lieu lon, ETL, Phan tich.
+echo     - Cau truc: 1_input (chi doc), 2_process, 3_output.
 echo.
-echo [2] App Development (Lập trình ứng dụng)
-echo     - Mục đích: Xây dựng web/app với React, Node, Python...
-echo     - Cấu trúc: src/, docs/, tests/.
+echo [2] App Development (Lap trinh ung dung)
+echo     - Muc dich: Xay dung web/app voi React, Node, Python...
+echo     - Cau truc: src/, docs/, tests/.
 echo.
 
-set /p choice="Nhập lựa chọn của bạn (1 hoặc 2): "
+set /p choice="Nhap lua chon cua ban (1 hoac 2): "
 
 if "%choice%"=="1" (
     echo.
-    echo Đang khởi tạo mô hình Data Pipeline...
+    echo Dang khoi tao mo hinh Data Pipeline...
     mkdir 1_input 2>nul
     mkdir 2_process 2>nul
     mkdir 3_output 2>nul
     
-    echo # Thư mục 1_input > 1_input\README.md
-    echo Thư mục này được thiết lập **[Chỉ Đọc]**. >> 1_input\README.md
-    echo Dữ liệu gốc ở đây không được phép sửa đổi bởi bất kỳ tiến trình nào. Mọi kết quả phải xuất ra 2_process hoặc 3_output. >> 1_input\README.md
+    echo # Thu muc 1_input > 1_input\README.md
+    echo Thu muc nay duoc thiet lap **[Chi Doc]**. >> 1_input\README.md
+    echo Du lieu goc o day khong duoc phep sua doi boi bat ky tien trinh nao. Moi ket qua phai xuat ra 2_process hoac 3_output. >> 1_input\README.md
 
-    echo Hoàn tất khởi tạo Data Pipeline!
+    echo Hoan tat khoi tao Data Pipeline!
 ) else if "%choice%"=="2" (
     echo.
-    echo Đang khởi tạo mô hình App Development...
+    echo Dang khoi tao mo hinh App Development...
     mkdir src 2>nul
     mkdir docs 2>nul
     mkdir tests 2>nul
     
-    echo # Cấu trúc nguồn dự án > src\README.md
-    echo Chứa mã nguồn cho ứng dụng. >> src\README.md
+    echo # Cau truc nguon du an > src\README.md
+    echo Chua ma nguon cho ung dung. >> src\README.md
 
-    echo Hoàn tất khởi tạo App Development!
+    echo Hoan tat khoi tao App Development!
 ) else (
     echo.
-    echo Lựa chọn không hợp lệ. Vui lòng chạy lại script.
+    echo Lua chon khong hop le. Vui long chay lai script.
     exit /b 1
 )
 
 echo.
-echo SKL AGENT KIT đã sẵn sàng hoạt động tại thư mục hiện tại.
-echo Gõ "antigravity" để triệu hồi Hệ điều hành AI của bạn.
+echo SKL AGENT KIT da san sang hoat dong tai thu muc hien tai.
+echo Go "antigravity" de trieu hoi He dieu hanh AI cua ban.
 echo ==================================================
 pause
