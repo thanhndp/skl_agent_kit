@@ -1,6 +1,6 @@
 # 🧠 SKL_AGENT — AI Framework Template
 
-> **Phiên bản:** 2.0 · Cập nhật: 2026-03-30
+> **Phiên bản:** 3.5 · Cập nhật: 2026-03-31
 > Bộ khung AI Orchestration dùng cho mọi dự án **Data Pipeline** hoặc **App Development**.
 
 `skl_agent` đóng gói Best Practices từ các hệ thống Agent hàng đầu (Antigravity SDK, Gstack, AutoResearchClaw, Skill Generator) thành một **template scaffolding** dùng lại cho mọi dự án.
@@ -11,12 +11,18 @@
 
 | Tính năng | Mô tả |
 |-----------|-------|
-| 🎯 **Dynamic Routing** | Tự động đánh giá độ khó Task → chọn Model (Tier 1→4), tải Skill phù hợp (Data Analytics / Web Engineering) |
-| 🔄 **Cascade Fallback** | Chống đứt gãy tiến trình — API hết quota (429) → tự động fallback Model thấp hơn + retry |
+| 🎯 **Execution Engine** | Runtime pipeline 12 bước — mọi task đi qua pre-check → classify → plan → execute → feedback |
+| 🧩 **Multi-intent Orchestration** | Phân loại nhiều intent cùng lúc + confidence scoring + execution plan |
+| 🔄 **Cascade Fallback** | API hết quota → tự động fallback Model thấp hơn · Tool fail → fallback Brain → Local |
+| 📐 **Instruction Layer** | 4 lớp instruction (Safety → Identity → Capability → Task) — Agent không "trôi vai" |
+| 🔗 **Capability Composition** | 7 chain patterns — Agent chain nhiều capabilities cho multi-step tasks |
 | 📋 **Artifact Data Handoff** | Agent giao tiếp qua Data Specs (không truyền miệng → giảm ảo giác AI) |
-| 🛡️ **Safety Guards** | `/freeze` (khóa scope), `/careful` (chống phá mã/xóa DB), `[READ-ONLY]` cho `1_input/` |
-| 🔌 **NotebookLM MCP** | Đi kèm bộ cài NotebookLM MCP Hybrid v1.0 — 33 tools tiếng Việt, multi-account |
-| 🧠 **Brain Architecture** | NotebookLM = Long-Term Memory + Antigravity = Active Processor → Closed-loop system |
+| 🛡️ **Inline Guardrails** | Safety checks gắn trực tiếp vào execution flow — không kiểm cuối cùng |
+| 🔌 **NotebookLM MCP** | 33 tools tiếng Việt, multi-account, Deep Research, podcast/video/slides |
+| 🧠 **Brain Architecture** | NotebookLM = Long-Term Memory · Antigravity = Active Processor → Closed-loop |
+| 💾 **Memory 3 Tầng** | Session + Brain + Entity — với confidence scores, decay, conflict resolution |
+| 🔁 **Closed-loop Feedback** | Negative feedback → adjust routing · Positive → reinforce patterns |
+| ⚙️ **State Machine** | Agent có states (idle/processing/waiting/executing) — không mất track |
 
 ---
 
@@ -70,8 +76,6 @@ notebooklm-mcp-auth
 # 3. Reload IDE → Test: "Liệt kê notebooks của tôi"
 ```
 
-> 📖 **Hướng dẫn chi tiết:** xem [docs/skill_extension_integration_guide.md](docs/skill_extension_integration_guide.md) — Section 4.2
-
 ---
 
 ## 🧠 Brain Architecture (Long-Term Memory)
@@ -96,13 +100,29 @@ User Task → Agent → Cần domain knowledge?
 | `auto` | Agent tự query Brain khi gặp trigger — không hỏi User |
 | `ask` | Agent hỏi User trước mỗi lần query — User quyết định |
 
-**Multiplication Effect:**
-- Cập nhật specs trong NotebookLM → Agent output thay đổi tức thì
-- Agent không hallucinate business logic — bám sát docs thật
-- Restart session → Brain vẫn giữ nguyên knowledge
-- Mỗi project 1 Brain riêng → context chính xác
+---
 
-> 📖 Chi tiết: [.agents/rules/brain-connector.md](.agents/rules/brain-connector.md)
+## ⚙️ Execution Engine (v3.5)
+
+Mọi task đi qua pipeline 12 bước:
+
+```
+User Input
+  → [1]  Load State (state-machine)
+  → [2]  Load Instructions (instruction-layer)
+  → [3]  Pre-check (context đủ? cần tool? sensitive?)
+  → [4]  Classify Intent — multi-label + confidence
+  → [5]  Build Execution Plan (multi-step)
+  → [6]  Select + Compose Capabilities
+  → [7]  Build Context — adaptive budget + dedup
+  → [8]  Guardrails Pre (safety + permission)
+  → [9]  Execute Steps — with checkpoints
+  → [10] Guardrails Post (data leak check)
+  → [11] Update State + Memory
+  → [12] Log + Feedback Loop
+```
+
+> 📖 Chi tiết: [execution-engine.yaml](.agents/runtime/execution-engine.yaml)
 
 ---
 
@@ -124,31 +144,43 @@ Script tự động `git pull` để lấy thay đổi mới nhất, **chỉ c�
 
 ```
 SKL_AGENT/
-├── .agents/                    # 🧠 Bộ não AI
+├── .agents/                       # 🧠 Bộ não AI
 │   ├── config/
-│   │   ├── model-routing.yaml  # Dynamic Routing (Tier 1→4)
-│   │   └── brain.yaml          # 🆕 Brain config (NotebookLM connection)
-│   ├── rules/
-│   │   ├── brain-connector.md  # 🆕 Khi nào query Brain (auto/ask/off)
+│   │   ├── model-routing.yaml     # Dynamic Routing (Tier 1→4)
+│   │   ├── brain.yaml             # Brain config (NotebookLM)
+│   │   ├── capabilities.yaml     # 🔗 7 capabilities + composition engine
+│   │   ├── webhooks.yaml         # n8n/automation bridge
+│   │   └── agents.yaml           # Multi-agent config
+│   ├── runtime/                   # 🆕 v3.5
+│   │   └── execution-engine.yaml # Central pipeline (12 steps)
+│   ├── rules/                     # 13 quy tắc Agent tuân thủ
+│   │   ├── orchestrator.md       # Multi-intent + execution plan
+│   │   ├── instruction-layer.md  # 🆕 4-priority instruction system
+│   │   ├── state-machine.md      # 🆕 Agent state transitions
+│   │   ├── context-builder.md    # Adaptive budget + dedup + ranking
+│   │   ├── brain-connector.md     # Brain query rules (auto/ask/off)
+│   │   ├── memory-protocol.md    # Memory decay + conflict + confidence
+│   │   ├── knowledge-tiers.md    # Static/Dynamic/Personal + fallback
+│   │   ├── permission-guard.md   # Data protection 3 lớp
+│   │   ├── feedback-logger.md    # Closed-loop feedback
+│   │   ├── safety-guard.md        # /freeze, /careful, READ-ONLY
+│   │   ├── data-handoff.md        # No File No Trust
 │   │   ├── coding-standards.md
-│   │   ├── data-handoff.md
-│   │   ├── safety-guard.md
 │   │   └── skill-development.md
+│   ├── memory/                    # Entity Memory
+│   │   └── entities.yaml         # User profiles, context notes
 │   ├── skills/
 │   │   ├── excel-professional/
 │   │   └── viet-chuyen-nghiep/
-│   └── workflows/              # 13 slash commands
-│       ├── brain-bootstrap.md  # 🆕 /brain-bootstrap
-│       ├── brain-sync.md       # 🆕 /brain-sync
-│       ├── best-practices.md   # /best-practices
-│       ├── load-skills.md      # /load-skills
-│       ├── project-status.md   # /project-status
-│       ├── skill-*.md          # /skill-generate, audit, validate...
-│       └── ...                 
+│   └── workflows/                 # 13 slash commands
+│       ├── brain-bootstrap.md     # /brain-bootstrap
+│       ├── brain-sync.md          # /brain-sync
+│       ├── best-practices.md      # /best-practices
+│       ├── load-skills.md         # /load-skills
+│       ├── project-status.md      # /project-status
+│       └── skill-*.md             # /skill-generate, audit...
 ├── libs/
 │   └── notebooklm-mcp-hybrid-v1.0.zip
-├── docs/
-│   └── skill_extension_integration_guide.md
 ├── setup.bat / setup.sh
 ├── update.bat / update.sh
 └── README.md
@@ -179,8 +211,6 @@ SKL_AGENT/
 /skill-generate    # Tạo qua phỏng vấn AI 5 Phase
 /skill-scaffold    # Tạo skeleton nhanh
 ```
-
-> 📖 Xem chi tiết: [docs/skill_extension_integration_guide.md](docs/skill_extension_integration_guide.md)
 
 ---
 
@@ -220,12 +250,45 @@ SKL_AGENT/
 
 | Tài liệu | Nội dung |
 |-----------|----------|
-| [Integration Guide](docs/skill_extension_integration_guide.md) | Hướng dẫn tích hợp Skills, MCP Servers, Workflows |
-| [Brain Connector](.agents/rules/brain-connector.md) | 🆕 Cơ chế tham vấn NotebookLM Brain (auto/ask/off) |
-| [Brain Config](.agents/config/brain.yaml) | 🆕 Cấu hình kết nối Brain cho project |
-| [Safety Guard](.agents/rules/safety-guard.md) | Quy tắc bảo vệ `/freeze`, `/careful` |
-| [Data Handoff](.agents/rules/data-handoff.md) | Quy tắc giao tiếp Agent qua Artifact |
-| [Model Routing](.agents/config/model-routing.yaml) | Cấu hình Dynamic Model Selection |
+| [Execution Engine](.agents/runtime/execution-engine.yaml) | 🆕 Central pipeline 12 bước |
+| [Orchestrator](.agents/rules/orchestrator.md) | Multi-intent + execution plan + guardrails |
+| [Instruction Layer](.agents/rules/instruction-layer.md) | 🆕 4-priority instruction system |
+| [State Machine](.agents/rules/state-machine.md) | 🆕 Agent state transitions |
+| [Context Builder](.agents/rules/context-builder.md) | Adaptive budget + dedup + ranking |
+| [Brain Connector](.agents/rules/brain-connector.md) | Brain query rules (auto/ask/off) |
+| [Memory Protocol](.agents/rules/memory-protocol.md) | Decay + conflict + confidence |
+| [Knowledge Tiers](.agents/rules/knowledge-tiers.md) | Static/Dynamic/Personal + fallback |
+| [Capabilities](.agents/config/capabilities.yaml) | 7 capabilities + composition engine |
+| [Feedback Logger](.agents/rules/feedback-logger.md) | Closed-loop feedback |
+| [Safety Guard](.agents/rules/safety-guard.md) | /freeze, /careful, READ-ONLY |
+| [Model Routing](.agents/config/model-routing.yaml) | Dynamic Model Selection (Tier 1→4) |
+
+---
+
+## 📝 Changelog
+
+### v3.5 (2026-03-31)
+- 🆕 Execution Engine — central runtime pipeline
+- 🆕 Instruction Layer — 4 lớp chống trôi vai
+- 🆕 State Machine — agent states + transitions
+- ⬆️ Orchestrator v2 — multi-intent, confidence, execution plan
+- ⬆️ Context Builder v2 — adaptive budget, dedup, weighted ranking
+- ⬆️ Capabilities v2 — output contracts, composition engine
+- ⬆️ Memory Protocol v2 — decay, conflict resolution, confidence
+- ⬆️ Knowledge Tiers v2 — cascading fallback logic
+- ⬆️ Feedback Logger v2 — closed-loop feedback
+
+### v3.0 (2026-03-30)
+- Brain Architecture (NotebookLM integration)
+- Orchestrator Layer + Context Builder
+- Memory 3 tầng + Entity Memory
+- Permission Guard + Feedback Logger
+- NotebookLM MCP Hybrid v1.0
+
+### v2.0 (2026-03-28)
+- Dynamic Model Routing (Tier 1→4)
+- Safety Guards + Data Handoff
+- Skills system + Workflows
 
 ---
 
