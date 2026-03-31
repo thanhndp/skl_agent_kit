@@ -53,4 +53,3 @@ echo.
 echo SKL AGENT KIT da san sang hoat dong tai thu muc hien tai.
 echo Go "antigravity" de trieu hoi He dieu hanh AI cua ban.
 echo ==================================================
-pause

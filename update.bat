@@ -35,4 +35,3 @@ echo.
 echo ==================================================
 echo Cap nhat thanh cong! Tri tue cua Agent da duoc nang cap.
 echo ==================================================
-pause
