@@ -23,7 +23,8 @@ venv/
 src/
 docs/*
 !docs/skill_extension_integration_guide.md
-tests/
+tests/*
+!tests/simulation.md
 dist/
 build/
 node_modules/
