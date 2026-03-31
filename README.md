@@ -23,6 +23,11 @@
 | 💾 **Memory 3 Tầng** | Session + Brain + Entity — với confidence scores, decay, conflict resolution |
 | 🔁 **Closed-loop Feedback** | Negative feedback → adjust routing · Positive → reinforce patterns |
 | ⚙️ **State Machine** | Agent có states (idle/processing/waiting/executing) — không mất track |
+| 📊 **Observability** | 6 metrics (intent accuracy, tool success, tokens, fallback rate) + 5 log points |
+| 💰 **Cost Control** | Dynamic token budget by intent + cheapest sufficient model selection |
+| 📦 **Cache** | 3-layer cache (query/tool/context) — giảm 50-80% cost cho queries lặp lại |
+| 🔧 **Error Handling** | Retry 2x + 4 fallback chains + graceful degradation matrix |
+| 👤 **Human-in-the-Loop** | Education guards: confirm trước khi sửa điểm, gửi PH, xóa file |
 
 ---
 
@@ -124,6 +129,31 @@ User Input
 
 > 📖 Chi tiết: [execution-engine.yaml](.agents/runtime/execution-engine.yaml)
 
+### Hooks Layer (5 Plugins)
+
+Các plugin hook vào pipeline mà **không sửa core**:
+
+```
+Execution Engine (core pipeline)
+    ↓
+[Hooks Layer]
+  ├── 📊 Observability  → steps 4, 5, 7, 9, 12
+  ├── 📦 Cache          → trước step 9
+  ├── 💰 Cost Control   → step 6
+  ├── 🔧 Error Handling → wrap step 9
+  └── 👤 Human Loop     → step 5 → 9
+    ↓
+Capabilities + Tools + Brain
+```
+
+| Plugin | File | Chức năng |
+|--------|------|-----------|
+| Observability | `runtime/observability.yaml` | Track metrics, log decisions |
+| Cache | `runtime/cache.yaml` | Cache Brain queries + tool results (TTL-based) |
+| Cost Control | `config/cost-control.yaml` | Dynamic budget, model selection by intent |
+| Error Handling | `rules/error-handling.md` | Retry + fallback + graceful degradation |
+| Human Loop | `rules/human-loop.md` | Confirm trước action nhạy cảm (edu context) |
+
 ---
 
 ## 🛠 Nâng Cấp Tự Động
@@ -146,23 +176,28 @@ Script tự động `git pull` để lấy thay đổi mới nhất, **chỉ c�
 SKL_AGENT/
 ├── .agents/                       # 🧠 Bộ não AI
 │   ├── config/
-│   │   ├── model-routing.yaml     # Dynamic Routing (Tier 1→4)
+│   │   ├── model-routing.yaml     # Dynamic Routing (Tier 1→4) + notifications
 │   │   ├── brain.yaml             # Brain config (NotebookLM)
 │   │   ├── capabilities.yaml     # 🔗 7 capabilities + composition engine
+│   │   ├── cost-control.yaml     # 💰 Dynamic budget + model selection
 │   │   ├── webhooks.yaml         # n8n/automation bridge
 │   │   └── agents.yaml           # Multi-agent config
-│   ├── runtime/                   # 🆕 v3.5
-│   │   └── execution-engine.yaml # Central pipeline (12 steps)
-│   ├── rules/                     # 13 quy tắc Agent tuân thủ
+│   ├── runtime/                   # ⚙️ Engine + Plugins
+│   │   ├── execution-engine.yaml # Central pipeline (12 steps)
+│   │   ├── observability.yaml   # 📊 Metrics + log points
+│   │   └── cache.yaml           # 📦 3-layer cache (query/tool/context)
+│   ├── rules/                     # 15 quy tắc Agent tuân thủ
 │   │   ├── orchestrator.md       # Multi-intent + execution plan
-│   │   ├── instruction-layer.md  # 🆕 4-priority instruction system
-│   │   ├── state-machine.md      # 🆕 Agent state transitions
+│   │   ├── instruction-layer.md  # 4-priority instruction system
+│   │   ├── state-machine.md      # Agent state transitions
 │   │   ├── context-builder.md    # Adaptive budget + dedup + ranking
 │   │   ├── brain-connector.md     # Brain query rules (auto/ask/off)
 │   │   ├── memory-protocol.md    # Memory decay + conflict + confidence
 │   │   ├── knowledge-tiers.md    # Static/Dynamic/Personal + fallback
 │   │   ├── permission-guard.md   # Data protection 3 lớp
 │   │   ├── feedback-logger.md    # Closed-loop feedback
+│   │   ├── error-handling.md     # 🔧 Retry + fallback + degradation
+│   │   ├── human-loop.md         # 👤 Confirm cho action nhạy cảm
 │   │   ├── safety-guard.md        # /freeze, /careful, READ-ONLY
 │   │   ├── data-handoff.md        # No File No Trust
 │   │   ├── coding-standards.md
@@ -248,12 +283,14 @@ SKL_AGENT/
 
 ## 📖 Tài Liệu
 
+### Core
+
 | Tài liệu | Nội dung |
 |-----------|----------|
-| [Execution Engine](.agents/runtime/execution-engine.yaml) | 🆕 Central pipeline 12 bước |
+| [Execution Engine](.agents/runtime/execution-engine.yaml) | Central pipeline 12 bước |
 | [Orchestrator](.agents/rules/orchestrator.md) | Multi-intent + execution plan + guardrails |
-| [Instruction Layer](.agents/rules/instruction-layer.md) | 🆕 4-priority instruction system |
-| [State Machine](.agents/rules/state-machine.md) | 🆕 Agent state transitions |
+| [Instruction Layer](.agents/rules/instruction-layer.md) | 4-priority instruction system |
+| [State Machine](.agents/rules/state-machine.md) | Agent state transitions |
 | [Context Builder](.agents/rules/context-builder.md) | Adaptive budget + dedup + ranking |
 | [Brain Connector](.agents/rules/brain-connector.md) | Brain query rules (auto/ask/off) |
 | [Memory Protocol](.agents/rules/memory-protocol.md) | Decay + conflict + confidence |
@@ -263,12 +300,23 @@ SKL_AGENT/
 | [Safety Guard](.agents/rules/safety-guard.md) | /freeze, /careful, READ-ONLY |
 | [Model Routing](.agents/config/model-routing.yaml) | Dynamic Model Selection (Tier 1→4) |
 
+### Plugins (v3.5)
+
+| Tài liệu | Nội dung |
+|-----------|----------|
+| [Observability](.agents/runtime/observability.yaml) | 6 metrics + 5 log points |
+| [Cache](.agents/runtime/cache.yaml) | 3-layer cache (query/tool/context) |
+| [Cost Control](.agents/config/cost-control.yaml) | Dynamic budget + model selection |
+| [Error Handling](.agents/rules/error-handling.md) | Retry + 4 fallback chains |
+| [Human Loop](.agents/rules/human-loop.md) | Education-specific confirm guards |
+
 ---
 
 ## 📝 Changelog
 
 ### v3.5 (2026-03-31)
-- 🆕 Execution Engine — central runtime pipeline
+**Core:**
+- 🆕 Execution Engine — central runtime pipeline (12 steps)
 - 🆕 Instruction Layer — 4 lớp chống trôi vai
 - 🆕 State Machine — agent states + transitions
 - ⬆️ Orchestrator v2 — multi-intent, confidence, execution plan
@@ -277,6 +325,14 @@ SKL_AGENT/
 - ⬆️ Memory Protocol v2 — decay, conflict resolution, confidence
 - ⬆️ Knowledge Tiers v2 — cascading fallback logic
 - ⬆️ Feedback Logger v2 — closed-loop feedback
+- ⬆️ Model Routing — model switch notifications
+
+**Plugins:**
+- 🆕 Observability — 6 metrics + 5 log points hooked vào pipeline
+- 🆕 Cache — 3-layer cache (query/tool/context), giảm 50-80% cost
+- 🆕 Cost Control — dynamic token budget + cheapest sufficient model
+- 🆕 Error Handling — retry 2x + 4 fallback chains + graceful degradation
+- 🆕 Human-in-the-Loop — education guards cho student data, parent comms
 
 ### v3.0 (2026-03-30)
 - Brain Architecture (NotebookLM integration)
