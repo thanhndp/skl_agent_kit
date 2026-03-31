@@ -50,3 +50,44 @@ auto_model:
       "sonnet": "pro"
       "pro": "flash"
       "flash": "haiku"  # The absolute bottom baseline
+
+  # ─── Model Switch Notifications (v3.5) ─────────────────────────────────
+  # Agent PHẢI thông báo mỗi khi model thay đổi — dù do User hay do system.
+  # Antigravity IDE KHÔNG tự hiện notification khi switch model,
+  # nên Agent phải tự thông báo trong response.
+  notifications:
+    enabled: true
+    announce_on:
+      - model_fallback       # Quota/rate limit → tự động chuyển model thấp hơn
+      - user_model_switch    # User đổi model trong IDE settings
+      - tier_upgrade         # Task phức tạp → Agent đề xuất model cao hơn
+      - tier_downgrade       # Task đơn giản → Agent đề xuất model thấp hơn
+
+    # Templates — Agent PHẢI dùng 1 trong các mẫu sau
+    templates:
+      model_fallback: |
+        ⚠️ **Model fallback:** {old_model} → {new_model}
+        Lý do: {reason} (quota/rate limit)
+        Lưu ý: Output quality có thể giảm. Thử lại sau nếu cần {old_model}.
+
+      user_model_switch: |
+        🔄 **Model đã chuyển:** {old_model} → {new_model}
+        Tier hiện tại: {tier}
+        Khả năng: {capability_note}
+
+      tier_recommendation: |
+        💡 **Đề xuất model:** Task này phù hợp Tier {recommended_tier} ({recommended_model})
+        Hiện đang dùng: Tier {current_tier} ({current_model})
+        {reason}
+
+    # Khi nào KHÔNG thông báo
+    suppress_when:
+      - same_model_reselected    # Chọn lại cùng model → im lặng
+      - within_same_tier         # Chuyển trong cùng tier → im lặng
+
+    # Capability notes cho từng tier (để User biết mình đang dùng gì)
+    capability_notes:
+      tier1: "Nhanh, rẻ — phù hợp fix typo, format, Q&A đơn giản"
+      tier2: "Cân bằng — bug fix, single component, code review"
+      tier3: "Mạnh — multi-file refactor, architecture, analysis sâu"
+      tier4: "Tối đa — system redesign, production incidents, reasoning phức tạp"
