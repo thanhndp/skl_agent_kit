@@ -1,0 +1,103 @@
+# =============================================================================
+# SKL_AGENT Execution Engine
+# =============================================================================
+# Runtime xương sống — định nghĩa luồng chạy chính của Agent.
+# Mọi task đều đi qua pipeline này, không có ngoại lệ.
+# =============================================================================
+
+engine:
+  version: "1.0"
+  description: "Central execution pipeline cho SKL_AGENT"
+
+# ─── Main Pipeline ──────────────────────────────────────────────────────────
+
+pipeline:
+  - step: load_state
+    description: "Load agent state + entity memory"
+    rule: memory-protocol.md
+    required: true
+
+  - step: load_instructions
+    description: "Load instruction layer (identity, role, task)"
+    rule: instruction-layer.md
+    required: true
+
+  - step: pre_check
+    description: "Kiểm tra context đủ chưa, cần tool không, sensitive không"
+    rule: orchestrator.md#pre-check
+    required: true
+    on_fail: ask_clarification
+
+  - step: classify_intent
+    description: "Multi-label intent classification với confidence"
+    rule: orchestrator.md#classify-intent
+    required: true
+    on_low_confidence: ask_clarification
+
+  - step: build_execution_plan
+    description: "Lập kế hoạch multi-step dựa trên intents"
+    rule: orchestrator.md#build-execution-plan
+    required: true
+
+  - step: select_capabilities
+    description: "Chọn và compose capabilities từ plan"
+    config: capabilities.yaml
+    required: true
+
+  - step: build_context
+    description: "Assemble context theo intent + adaptive budget"
+    rule: context-builder.md
+    required: true
+
+  - step: run_guardrails_pre
+    description: "Permission check + safety check trước khi execute"
+    rules: [safety-guard.md, permission-guard.md]
+    required: true
+    on_fail: block_with_reason
+
+  - step: execute_steps
+    description: "Chạy từng step trong execution plan"
+    config: capabilities.yaml#composition
+    required: true
+    checkpoints:
+      before_tool_call: permission_check
+      before_execute: confirmation_required
+      between_steps: validate_output
+
+  - step: run_guardrails_post
+    description: "Data leak check + source attribution trước output"
+    rules: [permission-guard.md, data-handoff.md]
+    required: true
+
+  - step: update_state
+    description: "Cập nhật agent state + entity memory"
+    rule: state-machine.md
+    required: true
+
+  - step: log_feedback
+    description: "Log routing decision + thu thập feedback"
+    rule: feedback-logger.md
+    required: true
+
+# ─── Error Handling ──────────────────────────────────────────────────────────
+
+error_handling:
+  strategy: graceful_degradation
+
+  on_tool_failure:
+    - retry_once
+    - fallback_to_brain_with_warning
+    - if_brain_also_fails: inform_user_with_options
+
+  on_brain_failure:
+    - fallback_to_local_files
+    - suggest_tool_query
+
+  on_quota_exceeded:
+    - cascade_fallback (model-routing.yaml)
+    - log_and_notify_user
+
+  on_unknown_error:
+    - log_full_context
+    - inform_user
+    - suggest_retry_or_rephrase

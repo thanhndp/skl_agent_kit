@@ -1,9 +1,11 @@
 # =============================================================================
-# SKL_AGENT Capability Map
+# SKL_AGENT Capability Map v2
 # =============================================================================
-# Thay thế mode cứng bằng capability-based routing.
-# Agent chọn capability phù hợp nhất theo intent, không expose cho User.
+# Capability-based routing + composition engine + output contracts.
+# Agent chọn capability phù hợp nhất, có thể chain nhiều capabilities.
 # =============================================================================
+
+# ─── Core Capabilities ─────────────────────────────────────────────────────
 
 capabilities:
 
@@ -13,7 +15,9 @@ capabilities:
     requires: [brain]
     optional: [local_files, tools]
     priority: knowledge_accuracy
-    output: "Câu trả lời rõ ràng, có source attribution"
+    output_contract:
+      format: [answer, source_attribution]
+      constraints: [cite_sources, no_hallucination]
 
   summarize:
     description: "Tóm tắt tài liệu, data, hoặc conversation"
@@ -21,7 +25,9 @@ capabilities:
     requires: [local_files]
     optional: [brain]
     priority: conciseness
-    output: "Bản tóm tắt ngắn gọn, structured"
+    output_contract:
+      format: [summary, key_points]
+      constraints: [max_500_words, structured]
 
   analyze:
     description: "Phân tích data, so sánh, đánh giá"
@@ -29,7 +35,9 @@ capabilities:
     requires: [local_files, tools]
     optional: [brain]
     priority: accuracy
-    output: "Bảng phân tích, insights, recommendations"
+    output_contract:
+      format: [summary, key_insights, risks, recommendations]
+      constraints: [data_driven, include_evidence]
 
   execute:
     description: "Thực hiện hành động cụ thể (tạo file, gửi request, chạy lệnh)"
@@ -37,7 +45,13 @@ capabilities:
     requires: [tools, confirmation]
     optional: [brain]
     priority: safety
-    output: "Kết quả thực thi + confirmation"
+    output_contract:
+      format: [result, confirmation_receipt]
+      constraints: [must_confirm_if_sensitive, validate_inputs, rollback_plan]
+    guardrails:
+      - permission_check
+      - safety_check
+      - confirmation_required
 
   create:
     description: "Tạo nội dung mới (code, docs, slides, reports)"
@@ -45,7 +59,9 @@ capabilities:
     requires: [skills]
     optional: [brain, local_files]
     priority: quality
-    output: "File hoặc nội dung hoàn chỉnh"
+    output_contract:
+      format: [structured_content, ready_to_use]
+      constraints: [follow_templates, include_metadata]
 
   recommend:
     description: "Đề xuất giải pháp, next steps, action items"
@@ -53,7 +69,9 @@ capabilities:
     requires: [brain, memory]
     optional: [tools]
     priority: actionability
-    output: "Danh sách đề xuất có prioritize"
+    output_contract:
+      format: [recommendations_list, priority_ranking, rationale]
+      constraints: [max_7_items, include_effort_estimate]
 
   debug:
     description: "Tìm và sửa lỗi trong code hoặc config"
@@ -61,4 +79,56 @@ capabilities:
     requires: [local_files, tools]
     optional: []
     priority: correctness
-    output: "Root cause + fix"
+    output_contract:
+      format: [root_cause, fix, verification]
+      constraints: [include_reproduce_steps, test_after_fix]
+
+# ─── Capability Composition Engine ─────────────────────────────────────────
+
+composition:
+
+  # Agent CÓ THỂ chain nhiều capabilities cho multi-intent tasks
+  # Mỗi pattern = ordered list of capabilities
+
+  patterns:
+
+    query_only:
+      description: "Hỏi đáp đơn giản"
+      chain: [qa]
+      example: "X là gì?"
+
+    analyze_then_recommend:
+      description: "Phân tích rồi đề xuất"
+      chain: [analyze, recommend]
+      example: "Phân tích data này và đề xuất giải pháp"
+
+    qa_then_execute:
+      description: "Tra cứu rồi hành động"
+      chain: [qa, execute]
+      checkpoint_before: execute   # guardrail trước bước execute
+      example: "Theo quy trình nào thì gửi email thông báo?"
+
+    create_with_reference:
+      description: "Tham khảo rồi tạo mới"
+      chain: [qa, create]
+      example: "Tạo báo cáo theo mẫu chuẩn"
+
+    full_analysis_flow:
+      description: "Phân tích → đề xuất → tạo → thực hiện"
+      chain: [analyze, recommend, create, execute]
+      checkpoints: [before_execute]
+      example: "Phân tích dữ liệu, đề xuất kế hoạch, tạo file và triển khai"
+
+    debug_and_fix:
+      description: "Chẩn đoán → sửa → xác minh"
+      chain: [debug, execute]
+      checkpoint_before: execute
+      example: "Fix bug này"
+
+    summarize_then_create:
+      description: "Tóm tắt → tạo nội dung"
+      chain: [summarize, create]
+      example: "Tóm tắt tài liệu này rồi viết báo cáo"
+
+  # Nếu không match pattern nào → Agent tự compose từ intents
+  fallback_strategy: compose_from_intents
