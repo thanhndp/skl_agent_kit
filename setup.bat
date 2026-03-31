@@ -18,7 +18,11 @@ echo     - Muc dich: Xay dung web/app voi React, Node, Python...
 echo     - Cau truc: src/, docs/, tests/.
 echo.
 
-set /p choice="Nhap lua chon cua ban (1 hoac 2): "
+if "%~1" neq "" (
+    set choice=%~1
+) else (
+    set /p choice="Nhap lua chon cua ban (1 hoac 2): "
+)
 
 if "%choice%"=="1" (
     echo.

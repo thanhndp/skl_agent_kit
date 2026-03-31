@@ -19,7 +19,11 @@ echo "    - Mục đích: Xây dựng web/app với React, Node, Python..."
 echo "    - Cấu trúc: src/, docs/, tests/."
 echo ""
 
-read -p "Nhập lựa chọn của bạn (1 hoặc 2): " choice
+if [ -n "$1" ]; then
+    choice="$1"
+else
+    read -p "Nhập lựa chọn của bạn (1 hoặc 2): " choice
+fi
 
 if [ "$choice" == "1" ]; then
     echo ""
