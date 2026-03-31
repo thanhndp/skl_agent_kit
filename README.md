@@ -1,9 +1,29 @@
-# 🧠 SKL_AGENT — AI Framework Template
+# 🧠 SKL AGENT KIT — AI Framework Template
 
 > **Phiên bản:** 3.5 · Cập nhật: 2026-03-31
 > Bộ khung AI Orchestration dùng cho mọi dự án **Data Pipeline** hoặc **App Development**.
 
-`skl_agent` đóng gói Best Practices từ các hệ thống Agent hàng đầu (Antigravity SDK, Gstack, AutoResearchClaw, Skill Generator) thành một **template scaffolding** dùng lại cho mọi dự án.
+`skl_agent_kit` đóng gói Best Practices từ các hệ thống Agent hàng đầu (Antigravity SDK, Gstack, AutoResearchClaw, Skill Generator) thành một **template scaffolding** dùng lại cho mọi dự án.
+
+---
+
+## ⚡ TL;DR — Bắt Đầu Trong 2 Phút
+
+```bash
+# 1. Clone
+git clone https://github.com/thanhndp/skl_agent_kit.git .
+
+# 2. Setup (chọn Data Pipeline hoặc App Dev)
+setup.bat          # Windows
+./setup.sh         # Mac/Linux
+
+# 3. Mở IDE → gọi Agent
+/project-status    # Xem tổng quan
+/brain-bootstrap   # Kết nối Brain (tùy chọn)
+```
+
+> Chỉ cần 3 bước. Phần còn lại Agent tự xử lý dựa trên rules trong `.agents/`.
+> Đọc tiếp bên dưới nếu muốn hiểu kiến trúc bên trong.
 
 ---
 
@@ -36,7 +56,7 @@
 ### Bước 1: Clone
 
 ```bash
-git clone https://github.com/thanhndp/skl_agent.git .
+git clone https://github.com/thanhndp/skl_agent_kit.git .
 ```
 
 ### Bước 2: Khởi tạo cấu trúc
@@ -64,7 +84,7 @@ Mở IDE tại thư mục gốc → gọi Agent (ví dụ: `antigravity`) để 
 
 ## 🔌 Cài Đặt NotebookLM MCP (Tùy chọn)
 
-SKL_AGENT đi kèm **NotebookLM MCP Hybrid v1.0** — cho phép AI Agent kết nối trực tiếp với Google NotebookLM.
+SKL AGENT KIT đi kèm **NotebookLM MCP Hybrid v1.0** — cho phép AI Agent kết nối trực tiếp với Google NotebookLM.
 
 **Tính năng:** 🇻🇳 33 tools tiếng Việt · 👥 Multi-Account · 🎧 Tạo podcast/video/slides · 🔎 Deep Research
 
@@ -173,7 +193,7 @@ Script tự động `git pull` để lấy thay đổi mới nhất, **chỉ c�
 ## 📦 Cấu Trúc Dự Án
 
 ```
-SKL_AGENT/
+SKL_AGENT_KIT/
 ├── .agents/                       # 🧠 Bộ não AI
 │   ├── config/
 │   │   ├── model-routing.yaml     # Dynamic Routing (Tier 1→4) + notifications
@@ -350,4 +370,7 @@ SKL_AGENT/
 
 ## 📝 License
 
-Private template — Được xây dựng bởi **thanhndp** @ Skyline School.
+**Proprietary** — All rights reserved.
+
+Được xây dựng bởi **thanhndp** @ Skyline School.
+Repo hiện public tạm thời cho mục đích review. Không được sao chép, phân phối, hoặc sử dụng thương mại mà không có sự đồng ý bằng văn bản.

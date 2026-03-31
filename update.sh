@@ -3,15 +3,15 @@
 export LANG=C.UTF-8
 
 echo "=================================================="
-echo "   SKL_AGENT: CẬP NHẬT HỆ SINH THÁI AI (UNIX)"
+echo "   SKL AGENT KIT: CẬP NHẬT HỆ SINH THÁI AI (UNIX)"
 echo "=================================================="
 echo "Đang tải phiên bản mới nhất từ Github..."
 
-TEMP_DIR=".skl_agent_update_temp"
+TEMP_DIR=".skl_agent_kit_update_temp"
 
 # Tạo thư mục clone tạm thời
 rm -rf "$TEMP_DIR" 2>/dev/null
-git clone --depth 1 https://github.com/thanhndp/skl_agent.git "$TEMP_DIR"
+git clone --depth 1 https://github.com/thanhndp/skl_agent_kit.git "$TEMP_DIR"
 
 if [ $? -ne 0 ]; then
     echo "[LỖI] Không thể tải dữ liệu từ Github. Vui lòng kiểm tra kết nối mạng hoặc kho lưu trữ."

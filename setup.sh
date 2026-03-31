@@ -4,10 +4,10 @@
 export LANG=C.UTF-8
 
 echo "=================================================="
-echo "        SKL_AGENT INIT SYSTEM"
+echo "        SKL AGENT KIT INIT SYSTEM"
 echo "=================================================="
 echo ""
-echo "Chào mừng bạn đến với SKL_AGENT Framework!"
+echo "Chào mừng bạn đến với SKL AGENT KIT Framework!"
 echo "Hãy chọn mô hình dự án bạn muốn thiết lập:"
 echo ""
 echo "[1] Data Pipeline (Xử lý dữ liệu)"
@@ -49,6 +49,6 @@ else
 fi
 
 echo ""
-echo "SKL_AGENT đã sẵn sàng hoạt động tại thư mục hiện tại."
+echo "SKL AGENT KIT đã sẵn sàng hoạt động tại thư mục hiện tại."
 echo "Gõ 'antigravity' để triệu hồi Hệ điều hành AI của bạn."
 echo "=================================================="

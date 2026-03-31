@@ -11,7 +11,7 @@
 2. [Các loại tích hợp](#2-các-loại-tích-hợp)
 3. [Tích hợp Skills (Office Viewer, PDF, PPTX, DOCX, XLSX)](#3-tích-hợp-skills)
 4. [Tích hợp MCP Servers](#4-tích-hợp-mcp-servers)
-   - [4.2 Cài đặt NotebookLM MCP Hybrid](#42-cài-đặt-notebooklm-mcp-hybrid-đi-kèm-skl_agent)
+   - [4.2 Cài đặt NotebookLM MCP Hybrid](#42-cài-đặt-notebooklm-mcp-hybrid-đi-kèm-skl-agent-kit)
 5. [Tích hợp Workflows](#5-tích-hợp-workflows)
 6. [Tạo Skill tùy chỉnh](#6-tạo-skill-tùy-chỉnh)
 7. [Best Practices](#7-best-practices)
@@ -226,9 +226,9 @@ pip install python-pptx
 | **Notion** | Notion workspace | Pages, Databases |
 | **PostgreSQL** | Database queries | SQL execution |
 
-### 4.2. Cài đặt NotebookLM MCP Hybrid (Đi kèm SKL_AGENT)
+### 4.2. Cài đặt NotebookLM MCP Hybrid (Đi kèm SKL AGENT KIT)
 
-SKL_AGENT đi kèm bộ cài **NotebookLM MCP Hybrid v1.0** — phiên bản Việt hóa và tối ưu cho Antigravity IDE.
+SKL AGENT KIT đi kèm bộ cài **NotebookLM MCP Hybrid v1.0** — phiên bản Việt hóa và tối ưu cho Antigravity IDE.
 
 **File cài đặt:** `libs/notebooklm-mcp-hybrid-v1.0.zip`
 
@@ -281,7 +281,7 @@ Thêm vào file cấu hình MCP:
     "notebooklm": {
       "command": "<ĐƯỜNG_DẪN_PYTHON>",
       "args": ["-m", "notebooklm_mcp_hybrid.server"],
-      "cwd": "<ĐƯỜNG_DẪN_SKL_AGENT>/libs/notebooklm-mcp-hybrid/src"
+      "cwd": "<ĐƯỜNG_DẪN_SKL_AGENT_KIT>/libs/notebooklm-mcp-hybrid/src"
     }
   }
 }
