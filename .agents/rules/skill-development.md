@@ -1,3 +1,7 @@
+---
+description: Nguyên tắc và tiêu chuẩn thiết kế điểm neo (skill) cho các tác nhân AI (7 Nguyên tắc Skill hoàn hảo).
+---
+
 # Skill Development Rules
 
 ## 7 Nguyên Tắc Skill Hoàn Hảo
