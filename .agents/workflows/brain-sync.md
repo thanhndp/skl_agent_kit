@@ -107,10 +107,8 @@ Hiển thị summary mới → Xác nhận knowledge đã được nạp.
 
 ---
 
-## Tích Hợp Với Data Handoff
+## Tích Hợp Với Data Handoff (Auto-Sync)
 
-Khi Agent ghi ra `docs/research.md`, `docs/spec.md`, hoặc `docs/plan.md` (theo Data Handoff Protocol), Agent NÊN tự động đề xuất:
+Khi Agent tạo ra hoặc cập nhật đáng kể các file trong mảng `docs/` (như `research.md`, `spec.md`, `plan.md`), theo quy chuẩn của Data Handoff, Agent **BẮT BUỘC TỰ ĐỘNG** gọi tool `mcp_notebooklm_notebook_add_text` để đồng bộ nội dung lên Brain mà **KHÔNG CẦN** User phải gõ lệnh `/brain-sync`. 
 
-> "📋 Tôi vừa ghi kết quả nghiên cứu ra `docs/research.md`. Bạn có muốn tôi sync vào Brain không? (chạy `/brain-sync`)"
-
-Điều này đảm bảo Brain luôn được cập nhật khi có knowledge mới — tạo **Multiplication Effect**: update docs → Brain update → Agent output thay đổi tức thì.
+Lệnh `/brain-sync` lúc này chỉ đóng vai trò hỗ trợ khi người dùng muốn tự tay sync hàng loạt (quét thư mục) hoặc gắn thêm các nguồn mở rộng từ bên ngoài (URL, Google Drive). Điều này tạo ra **Multiplication Effect** hoàn toàn tự động: Agent tự viết docs → Agent tự nạp vào Brain → Agent tự thông minh lên trong các task sau.

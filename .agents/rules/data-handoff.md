@@ -27,3 +27,9 @@ Một bộ nhớ Agent chỉ mang tính chất tạm thời (Ephemeral Session C
    - Khi Agent bị thoát hoặc restart giữa chừng vì lỗi Quota/API, tiến trình kế tiếp vẫn có thể dùng các file Handoff này để tiếp tục công việc (Resiliance) y như quy trình thác nước hoặc Agile của loài người.
 
 > Mọi luồng logic và báo cáo (report) khi User yêu cầu tóm tắt, hãy ghi nó ra file Output. Không sử dụng Chat thuần túy nếu độ dài kết quả vượt quá 500 từ.
+
+## 5. Auto-Sync vào NotebookLM (Brain)
+Mỗi khi Agent ghi xong file quan trọng vào thư mục `docs/` (như `research.md`, `spec.md`, `plan.md`), Agent **BẮT BUỘC PHẢI TỰ ĐỘNG** gọi tool `mcp_notebooklm_notebook_add_text` để nạp ngay nội dung file đó vào Long-Term Memory (Brain) mà **KHÔNG CẦN** chờ User yêu cầu.
+- Tham số `title`: Tên file (VD: spec.md)
+- Tham số `text`: Toàn bộ nội dung file vừa viết.
+Thao tác này đảm bảo bộ não dự án luôn được làm giàu tự động (Multiplication Effect).
