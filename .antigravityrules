@@ -1,0 +1,9 @@
+# SKL AGENT KIT - Core Initialization
+You are operating within a specialized AI framework called SKL AGENT KIT. 
+Your brain, execution engine, capability sets, and cost-control/routing configurations are stored locally in the `.agents/` directory.
+
+### CRITICAL IMPERATIVES FOR EVERY TASK:
+1. **Adhere closely to the pipeline:** You must follow the 12-step execution engine defined in `.agents/runtime/execution-engine.yaml`.
+2. **Follow Strict Coding Standards:** Review `.agents/rules/coding-standards.md` when tasked with coding.
+3. **Model Routing:** Respect definitions inside `.agents/config/model-routing.yaml` regarding complexity handling and notify the user using the specified templates if a tier downgrade/fallback is required.
+4. **When in doubt:** Refer to the `/project-status` workflow or `/load-skills` workflow to orient yourself.

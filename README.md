@@ -78,7 +78,13 @@ Hệ thống phỏng vấn 1 câu hỏi để cấu hình thư mục:
 
 ### Bước 3: Gọi AI Agent
 
-Mở IDE tại thư mục gốc → gọi Agent (ví dụ: `antigravity`) để bắt đầu làm việc.
+Mở IDE tại thư mục gốc → gọi Agent (ví dụ: `antigravity`, Cursor, Windsurf) để bắt đầu làm việc.
+
+> [!TIP]
+> **Tự động kích hoạt toàn diện:** Repo đã được tích hợp sẵn các file rule toàn cục (`.cursorrules`, `.windsurfrules`, `.antigravityrules`, `.clauderules`). Ngay sau khi clone repo và mở dự án, IDE của bạn sẽ **tự động** đọc toàn bộ cấu hình lõi trong thư mục `.agents/` (bao gồm model routing, an toàn, execution engine) vào bộ nhớ hệ thống.
+> 
+> **Chế độ thủ công (Tùy chọn):** Nếu muốn AI hệ thống lại toàn bộ trạng thái dự án hoặc nạp kịch bản làm việc đặc biệt trọn vẹn ở session chat đầu tiên, bạn có thể chạy lệnh:
+> `/project-status` hoặc `/load-skills`
 
 ---
 
