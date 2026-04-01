@@ -28,11 +28,12 @@ fi
 if [ "$choice" == "1" ]; then
     echo ""
     echo "Đang khởi tạo mô hình Data Pipeline..."
-    mkdir -p 1_input 2_process 3_output
+    mkdir -p 1_input/archived_docs 1_input/structured 2_process 3_output
     
-    echo "# Thư mục 1_input" > 1_input/README.md
-    echo "Thư mục này được thiết lập **[Chỉ Đọc]**." >> 1_input/README.md
-    echo "Dữ liệu gốc ở đây không được phép sửa đổi bởi bất kỳ tiến trình nào. Mọi kết quả phải xuất ra 2_process hoặc 3_output." >> 1_input/README.md
+    echo "# Thùng Chứa Dữ Liệu (Smart Funnel)" > 1_input/README.md
+    echo "Thư mục này là chỗ để Nhân viên vận hành ném file thô vào (Drag & Drop)." >> 1_input/README.md
+    echo "Hãy quăng tất cả file báo cáo của bạn vào đây. Dù là Excel, PDF, Ảnh chụp hay Word, cứ ném hết vào!" >> 1_input/README.md
+    echo "Sau đó gõ lệnh \`/data-ingest\` cho AI tự động sắp xếp phân luồng." >> 1_input/README.md
 
     echo "Hoàn tất khởi tạo Data Pipeline!"
     

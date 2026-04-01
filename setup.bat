@@ -27,13 +27,15 @@ if "%~1" neq "" (
 if "%choice%"=="1" (
     echo.
     echo Dang khoi tao mo hinh Data Pipeline...
-    mkdir 1_input 2>nul
+    mkdir 1_input\archived_docs 2>nul
+    mkdir 1_input\structured 2>nul
     mkdir 2_process 2>nul
     mkdir 3_output 2>nul
     
-    echo # Thu muc 1_input > 1_input\README.md
-    echo Thu muc nay duoc thiet lap **[Chi Doc]**. >> 1_input\README.md
-    echo Du lieu goc o day khong duoc phep sua doi boi bat ky tien trinh nao. Moi ket qua phai xuat ra 2_process hoac 3_output. >> 1_input\README.md
+    echo # Thung Chua Du Lieu ^(Smart Funnel^) > 1_input\README.md
+    echo Thu muc nay la cho de Nhan vien vut file vao. >> 1_input\README.md
+    echo Ban hay quang tat ca file bao cao vao day. Du la Excel, PDF, Anh hay Word, cu nem het vao! >> 1_input\README.md
+    echo Sau do go lenh ^`/data-ingest^` de AI tu dong sap xep va phan luong. >> 1_input\README.md
 
     echo Hoan tat khoi tao Data Pipeline!
 ) else if "%choice%"=="2" (
