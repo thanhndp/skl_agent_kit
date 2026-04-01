@@ -1,10 +1,10 @@
 ---
-description: SKL_AGENT Core Philosophy & Best Practices
+description: SKL AGENT KIT Core Philosophy & Best Practices
 ---
 
-# SKL_AGENT Ecosystem: Best Practices & Philosophy
+# SKL AGENT KIT Ecosystem: Best Practices & Philosophy
 
-Tài liệu này tổng hợp các triết lý cốt lõi từ 5 hệ thống AI Agent hàng đầu, dùng làm kim chỉ nam cho mọi Agent hoạt động trong dự án `SKL_AGENT`. Bất cứ khi nào Agent cần ra quyết định về kiến trúc, luồng làm việc hoặc tương tác, đều phải tuân theo các nguyên tắc này.
+Tài liệu này tổng hợp các triết lý cốt lõi từ 5 hệ thống AI Agent hàng đầu, dùng làm kim chỉ nam cho mọi Agent hoạt động trong dự án `SKL AGENT KIT`. Bất cứ khi nào Agent cần ra quyết định về kiến trúc, luồng làm việc hoặc tương tác, đều phải tuân theo các nguyên tắc này.
 
 ## Nguồn Tham Khảo Cốt Lõi
 
@@ -35,6 +35,6 @@ Tài liệu này tổng hợp các triết lý cốt lõi từ 5 hệ thống AI
 - Trước khi sử dụng một thư viện mới, Agent phải tự động trích xuất Document mới nhất từ Web thay vì dùng kiến thức huấn luyện lỗi thời. "Tìm kiếm trước, Code sau".
 
 ### 5. Standardized Skill Packages (Từ Skill-Generator)
-- Bất cứ khi nào tạo ra một capability mới cho `SKL_AGENT`, Agent phải tuân thủ nghiêm ngặt định dạng chuẩn: YAML Frontmatter (Name, Description) + Markdown Instructions. Kỹ năng phải bao gồm ví dụ (Examples) và hướng dẫn khôi phục lỗi (Troubleshooting).
+- Bất cứ khi nào tạo ra một capability mới cho `SKL AGENT KIT`, Agent phải tuân thủ nghiêm ngặt định dạng chuẩn: YAML Frontmatter (Name, Description) + Markdown Instructions. Kỹ năng phải bao gồm ví dụ (Examples) và hướng dẫn khôi phục lỗi (Troubleshooting).
 
 > Lời nhắc cho AI Agent: Nếu bạn nhận được một task phức tạp, hãy dùng lệnh/đọc file này thường xuyên để bám sát định hướng của hệ thống.

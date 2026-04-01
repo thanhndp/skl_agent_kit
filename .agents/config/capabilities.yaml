@@ -1,5 +1,5 @@
 # =============================================================================
-# SKL_AGENT Capability Map v2
+# SKL AGENT KIT Capability Map v2
 # =============================================================================
 # Capability-based routing + composition engine + output contracts.
 # Agent chọn capability phù hợp nhất, có thể chain nhiều capabilities.

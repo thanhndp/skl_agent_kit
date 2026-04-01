@@ -1,5 +1,5 @@
 ---
-description: Bộ tiêu chuẩn lập trình, quy chuẩn code và quản lý context dành cho hệ sinh thái SKL_AGENT.
+description: Bộ tiêu chuẩn lập trình, quy chuẩn code và quản lý context dành cho hệ sinh thái SKL AGENT KIT.
 ---
 
 # Coding Standards & Best Practices

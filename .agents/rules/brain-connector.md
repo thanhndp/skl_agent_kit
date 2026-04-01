@@ -2,7 +2,7 @@
 description: "Quy tắc tham vấn NotebookLM Brain — quyết định KHI NÀO Agent phải query Long-Term Memory."
 ---
 
-# SKL_AGENT Brain Connector — Workflow Engine Rule
+# SKL AGENT KIT Brain Connector — Workflow Engine Rule
 
 Tài liệu này định nghĩa cơ chế Workflow Engine quyết định khi nào Agent phải kết nối với **NotebookLM Brain** (Long-Term Memory) qua MCP trước khi xử lý Task.
 

@@ -1,5 +1,5 @@
 # =============================================================================
-# SKL_AGENT Execution Engine
+# SKL AGENT KIT Execution Engine
 # =============================================================================
 # Runtime xương sống — định nghĩa luồng chạy chính của Agent.
 # Mọi task đều đi qua pipeline này, không có ngoại lệ.
@@ -7,7 +7,7 @@
 
 engine:
   version: "1.0"
-  description: "Central execution pipeline cho SKL_AGENT"
+  description: "Central execution pipeline cho SKL AGENT KIT"
 
 # ─── Main Pipeline ──────────────────────────────────────────────────────────
 

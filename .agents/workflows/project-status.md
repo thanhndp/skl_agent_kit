@@ -15,7 +15,7 @@ Hiển thị tổng quan workspace hiện tại.
 5. **Hiển thị tổng kết** theo format:
 
 ```
-📊 Project Status: SKL_AGENT
+📊 Project Status: SKL AGENT KIT
 ═══════════════════════════
 🧩 Skills (N):
    - skill-name: description ngắn

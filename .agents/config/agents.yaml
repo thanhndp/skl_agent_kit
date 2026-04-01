@@ -1,5 +1,5 @@
 # =============================================================================
-# SKL_AGENT Multi-Agent Configuration
+# SKL AGENT KIT Multi-Agent Configuration
 # =============================================================================
 # Template — Enable khi project cần chia nhỏ thành domain-specific agents.
 # Orchestrator sẽ route task đến đúng agent dựa trên domain.

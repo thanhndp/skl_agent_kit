@@ -1,5 +1,5 @@
 # =============================================================================
-# SKL_AGENT Webhook Configuration (n8n / Automation Bridge)
+# SKL AGENT KIT Webhook Configuration (n8n / Automation Bridge)
 # =============================================================================
 # Template — Cấu hình khi project có hệ thống automation (n8n, Zapier, etc.)
 # Agent sẽ đọc file này để biết có thể trigger webhook nào.

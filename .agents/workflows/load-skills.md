@@ -2,9 +2,9 @@
 description: Cơ chế Nạp Kỹ năng (Dynamic Skill Loading) theo loại dự án.
 ---
 
-# SKL_AGENT Dynamic Skill Loading Protocol
+# SKL AGENT KIT Dynamic Skill Loading Protocol
 
-Hệ thống `SKL_AGENT` được thiết kế dưới dạng 1 Framework chuẩn. Tuy nhiên, ở mỗi công ty hoặc thư mục dự án, Agent sẽ phải đóng các vai trò khác nhau (Data Analyst vs Fullstack Developer). Tài liệu này hướng dẫn cách Agent tự cấu hình và tải Skill.
+Hệ thống `SKL AGENT KIT` được thiết kế dưới dạng 1 Framework chuẩn. Tuy nhiên, ở mỗi công ty hoặc thư mục dự án, Agent sẽ phải đóng các vai trò khác nhau (Data Analyst vs Fullstack Developer). Tài liệu này hướng dẫn cách Agent tự cấu hình và tải Skill.
 
 ## Dự Án Loại A: Data Pipeline
 **Dấu hiệu nhận biết:** Dự án có chứa cấu trúc thư mục `1_input`, `2_process`, `3_output`.

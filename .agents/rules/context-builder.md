@@ -2,7 +2,7 @@
 description: "Context Builder v2 — Adaptive budget, instruction layer, dedup, weighted ranking."
 ---
 
-# SKL_AGENT Context Builder v2
+# SKL AGENT KIT Context Builder v2
 
 Cách Agent tổ hợp context từ nhiều nguồn. Mục tiêu: giảm hallucination, tối ưu token, tăng relevance.
 
@@ -161,7 +161,7 @@ memory_selection:
     
   # Ví dụ compressed memory:
   # - User: thanhndp, vai trò admin, thích output structured
-  # - Project: SKL_AGENT, template AI framework
+  # - Project: SKL AGENT KIT, template AI framework
   # - Recent: đang làm v3.0, focus orchestrator
 ```
 

@@ -2,7 +2,7 @@
 description: "Kiểm soát quyền truy cập data và bảo vệ thông tin nhạy cảm."
 ---
 
-# SKL_AGENT Permission Guard
+# SKL AGENT KIT Permission Guard
 
 Bổ sung cho `safety-guard.md` — tập trung vào **quyền truy cập dữ liệu** và **bảo vệ thông tin nhạy cảm**.
 

@@ -2,7 +2,7 @@
 description: "State Machine — quản lý trạng thái Agent cho long-running sessions."
 ---
 
-# SKL_AGENT State Machine
+# SKL AGENT KIT State Machine
 
 Agent KHÔNG phải stateless. Với các session dài (nhiều task liên tiếp), Agent cần biết mình đang ở trạng thái nào.
 

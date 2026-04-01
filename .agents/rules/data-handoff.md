@@ -2,7 +2,7 @@
 description: Bắt buộc luân chuyển thông tin (Data Handoff) qua Artifacts thay vì truyền miệng.
 ---
 
-# SKL_AGENT Data Handoff Protocol
+# SKL AGENT KIT Data Handoff Protocol
 
 Tài liệu này định nghĩa quy định giao tiếp của Agent khi trao đổi kết quả nghiên cứu/xử lý sang Module/Phase tiếp theo, đặc biệt hiệu quả trong môi trường làm việc Đa Agent (Multi-Agent).
 

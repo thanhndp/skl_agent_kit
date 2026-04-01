@@ -2,7 +2,7 @@
 description: "Feedback Logger v2 — Closed-loop feedback ảnh hưởng lại routing + patterns."
 ---
 
-# SKL_AGENT Feedback Logger v2
+# SKL AGENT KIT Feedback Logger v2
 
 Ghi log routing decisions + thu thập feedback + **đóng vòng để cải thiện system**.
 

@@ -2,7 +2,7 @@
 description: "Phân tầng knowledge — Static (Brain) vs Dynamic (Tools) vs Personal (Memory) — với fallback logic."
 ---
 
-# SKL_AGENT Knowledge Tiers v2
+# SKL AGENT KIT Knowledge Tiers v2
 
 Agent truy cập knowledge từ 3 nguồn khác nhau. Mỗi nguồn có đặc điểm riêng — KHÔNG dùng thay thế lẫn nhau. Có fallback khi nguồn chính fail.
 

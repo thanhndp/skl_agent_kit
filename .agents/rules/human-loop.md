@@ -2,7 +2,7 @@
 description: "Human-in-the-loop — Agent hỏi User trước khi thực hiện hành động nhạy cảm. Đặc biệt quan trọng cho Education context."
 ---
 
-# SKL_AGENT Human-in-the-Loop
+# SKL AGENT KIT Human-in-the-Loop
 
 Agent KHÔNG được tự ý hành động khi: **confidence thấp, action nhạy cảm, hoặc ảnh hưởng tới học sinh/phụ huynh**.
 

@@ -2,7 +2,7 @@
 description: "Error handling — retry, fallback, graceful degradation. Wrap step 9."
 ---
 
-# SKL_AGENT Error Handling
+# SKL AGENT KIT Error Handling
 
 Agent KHÔNG được fail im lặng. Mọi error phải có: **retry → fallback → thông báo User**.
 

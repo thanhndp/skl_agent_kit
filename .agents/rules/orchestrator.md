@@ -2,7 +2,7 @@
 description: "Orchestrator v2 — Multi-intent classification, execution planning, guardrail checkpoints."
 ---
 
-# SKL_AGENT Orchestrator v2
+# SKL AGENT KIT Orchestrator v2
 
 Rule đọc đầu tiên khi Agent nhận task. Quyết định luồng xử lý trước khi mọi rule khác.
 

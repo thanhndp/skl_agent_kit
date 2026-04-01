@@ -1,10 +1,10 @@
 ---
-description: SKL_AGENT Core Safety Guards (Chống phá code & Bảo vệ dữ liệu)
+description: SKL AGENT KIT Core Safety Guards (Chống phá code & Bảo vệ dữ liệu)
 ---
 
-# SKL_AGENT Safety Guards
+# SKL AGENT KIT Safety Guards
 
-Tài liệu này định nghĩa các ranh giới KHÔNG THỂ VƯỢT QUA (Hard Boundaries) dành cho bất kỳ AI Agent nào đang hoạt động trong hệ sinh thái `SKL_AGENT`. Đọc kỹ và tuân thủ tuyệt đối trước khi thực hiện các lệnh Terminal hoặc ghi file.
+Tài liệu này định nghĩa các ranh giới KHÔNG THỂ VƯỢT QUA (Hard Boundaries) dành cho bất kỳ AI Agent nào đang hoạt động trong hệ sinh thái `SKL AGENT KIT`. Đọc kỹ và tuân thủ tuyệt đối trước khi thực hiện các lệnh Terminal hoặc ghi file.
 
 ## 1. Nguyên tắc "Tủ kính" (Bảo vệ `1_input` - Read-only Constraint)
 Nếu bạn đang hoạt động trong một dự án Data Pipeline (có chứa thư mục `1_input`, `2_process`, `3_output`):

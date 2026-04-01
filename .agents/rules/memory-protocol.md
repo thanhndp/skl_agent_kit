@@ -2,7 +2,7 @@
 description: "Protocol quản lý bộ nhớ 3 tầng — Session, Brain, Entity — với decay, conflict resolution, confidence."
 ---
 
-# SKL_AGENT Memory Protocol v2
+# SKL AGENT KIT Memory Protocol v2
 
 Agent cần "nhớ" để không xử lý mỗi task như người mới. Hệ thống memory 3 tầng + decay + conflict resolution.
 
@@ -182,7 +182,7 @@ memory_selection:
   # Output ví dụ:
   # - User: thanhndp, admin (confidence: 1.0)
   # - Thích output structured/bảng (confidence: 0.8)
-  # - Đang làm SKL_AGENT v3.0 (confidence: 1.0)
+  # - Đang làm SKL AGENT KIT v3.0 (confidence: 1.0)
   # - Ưu tiên tiếng Việt cho reports (confidence: 0.6)
 ```
 
