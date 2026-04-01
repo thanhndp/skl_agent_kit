@@ -1,93 +1,50 @@
-# =============================================================================
-# Auto Model Selector — Configuration Template
-# =============================================================================
-# Copy this file to your project: .agent/config/model-routing.yaml
-# Customize per project to match your team's model preferences and budget.
-# =============================================================================
+# SKL AGENT KIT - Model Routing Configuration
+# ---------------------------------------------------------
+# Define routing rules and failover logic for LLM requests.
+# Strategy: Cost Optimization -> Fallback to High Availability
 
-auto_model:
-  enabled: true
-  notify: true              # Show model recommendations to user
-  auto_switch_via_cli: true # Automatically run CLI command 'antigravity model set <model>'
-  default_tier: 2           # Fallback tier when classification is uncertain
-  cost_priority: balanced   # conservative (save money) | balanced | quality (best output)
+default_router: "data_distillation_pipeline"
 
-  # ─── Model Mapping ────────────────────────────────────────────────────
-  # Map each tier to your preferred model identifier
-  # Common options: flash, haiku, sonnet, pro, opus, opus-thinking, 
-  #                 gpt-4o-mini, gpt-4o, gpt-4.5, deepseek-v3
-  models:
-    tier1: "flash"           # Trivial: typos, formatting, simple Q&A
-    tier2: "sonnet"          # Standard: single component, bug fix, tests
-    tier3: "opus"            # Complex: multi-file refactor, architecture
-    tier4: "opus-thinking"   # Critical: system redesign, production incidents
+routers:
+  data_distillation_pipeline:
+    description: "Routing rule for generating training data. Prioritizes free Gemini, falls back to OpenRouter."
+    
+    # Tier 1: Primary Model (Free, High Rate Limit)
+    primary:
+      provider: "google-aistudio"
+      model: "gemini-2.5-flash"
+      api_key_env: "GOOGLE_API_KEY"
+      retry_attempts: 2
+      retry_delay: 10 # seconds
+      timeout: 60
+      # Catch quota errors to trigger fallback
+      fallback_on_errors:
+        - "429" 
+        - "RESOURCE_EXHAUSTED"
+        - "503"
+        
+    # Tier 2: First Fallback (OpenRouter - Paid, Very Stable)
+    fallback_1:
+      provider: "openrouter"
+      model: "google/gemini-2.5-flash" # Vẫn dùng flash qua openrouter để thống nhất format
+      api_key_env: "OPENROUTER_API_KEY"
+      retry_attempts: 3
+      retry_delay: 5
+      timeout: 60
+      fallback_on_errors: ["*"]
 
-  # ─── Project-Specific Boosts ──────────────────────────────────────────
-  # Force minimum tier for files matching patterns
-  boosts:
-    - pattern: "*.security.*"
-      min_tier: 3
-      reason: "Security-sensitive code requires advanced reasoning"
-    - pattern: "production/*"
-      min_tier: 3
-      reason: "Production changes need careful analysis"
-    - pattern: "*.test.*"
-      min_tier: 2
-      reason: "Tests need standard coding model at minimum"
-    - pattern: "infrastructure/*"
-      min_tier: 3
-      reason: "Infrastructure changes are high-impact"
+    # Tier 3: Emergency Fallback (OpenRouter - Heavy reasoning if needed)
+    fallback_2:
+      provider: "openrouter"
+      model: "anthropic/claude-3.5-haiku" 
+      api_key_env: "OPENROUTER_API_KEY"
+      retry_attempts: 1
 
-  # ─── Quota & Rate Limit Fallbacks (Cascade Chain) ─────────────────────
-  # Automatically switch to a fallback model if the current API throws a
-  # rate limit or out-of-quota error. The agent will traverse this chain
-  # until it finds a working model (e.g., opus -> sonnet -> pro -> flash).
-  quota_fallbacks:
-    enabled: true
-    chain:
-      "opus-thinking": "opus"
-      "opus": "sonnet"
-      "sonnet": "pro"
-      "pro": "flash"
-      "flash": "haiku"  # The absolute bottom baseline
-
-  # ─── Model Switch Notifications (v3.5) ─────────────────────────────────
-  # Agent PHẢI thông báo mỗi khi model thay đổi — dù do User hay do system.
-  # Antigravity IDE KHÔNG tự hiện notification khi switch model,
-  # nên Agent phải tự thông báo trong response.
-  notifications:
-    enabled: true
-    announce_on:
-      - model_fallback       # Quota/rate limit → tự động chuyển model thấp hơn
-      - user_model_switch    # User đổi model trong IDE settings
-      - tier_upgrade         # Task phức tạp → Agent đề xuất model cao hơn
-      - tier_downgrade       # Task đơn giản → Agent đề xuất model thấp hơn
-
-    # Templates — Agent PHẢI dùng 1 trong các mẫu sau
-    templates:
-      model_fallback: |
-        ⚠️ **Model fallback:** {old_model} → {new_model}
-        Lý do: {reason} (quota/rate limit)
-        Lưu ý: Output quality có thể giảm. Thử lại sau nếu cần {old_model}.
-
-      user_model_switch: |
-        🔄 **Model đã chuyển:** {old_model} → {new_model}
-        Tier hiện tại: {tier}
-        Khả năng: {capability_note}
-
-      tier_recommendation: |
-        💡 **Đề xuất model:** Task này phù hợp Tier {recommended_tier} ({recommended_model})
-        Hiện đang dùng: Tier {current_tier} ({current_model})
-        {reason}
-
-    # Khi nào KHÔNG thông báo
-    suppress_when:
-      - same_model_reselected    # Chọn lại cùng model → im lặng
-      - within_same_tier         # Chuyển trong cùng tier → im lặng
-
-    # Capability notes cho từng tier (để User biết mình đang dùng gì)
-    capability_notes:
-      tier1: "Nhanh, rẻ — phù hợp fix typo, format, Q&A đơn giản"
-      tier2: "Cân bằng — bug fix, single component, code review"
-      tier3: "Mạnh — multi-file refactor, architecture, analysis sâu"
-      tier4: "Tối đa — system redesign, production incidents, reasoning phức tạp"
+providers:
+  google-aistudio:
+    base_url: "https://generativelanguage.googleapis.com/v1beta"
+  openrouter:
+    base_url: "https://openrouter.ai/api/v1"
+    headers:
+      "HTTP-Referer": "https://skylineschool.edu.vn"
+      "X-Title": "Edu-SLM SaaS Project"

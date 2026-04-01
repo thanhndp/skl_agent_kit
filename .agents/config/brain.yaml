@@ -1,39 +1,32 @@
-# =============================================================================
-# SKL_AGENT Brain Configuration — NotebookLM as Long-Term Memory
-# =============================================================================
-# Mỗi project có 1 NotebookLM Brain riêng.
-# Chạy /brain-bootstrap để tự động cấu hình notebook_id.
-# =============================================================================
+# Brain Configuration - Edu-SLM SaaS Project
+# 2 NotebookLM notebooks serving different purposes
 
-brain:
-  enabled: false                 # Bật sau khi chạy /brain-bootstrap
-  notebook_id: ""                # UUID từ NotebookLM (set bởi /brain-bootstrap)
-  notebook_title: ""             # Tên notebook (set bởi /brain-bootstrap)
+notebooks:
+  # 1. Project Brain - Long-term memory for project architecture & plans
+  project_brain:
+    notebook_id: "6b0b6b0e-8dde-4808-a351-23c689423182"
+    title: "Edu-SLM SaaS Project Brain"
+    purpose: "Project architecture, MVP plan, coding rules, domain knowledge"
+    mode: auto  # Agent tự query khi cần
+    sources:
+      - "SKL AGENT KIT Architecture Summary"
+      - "Edu-SLM MVP Plan"
 
-  # ─── Chế Độ Tham Vấn ──────────────────────────────────────────────────
-  # auto: Agent tự query Brain khi gặp trigger (không hỏi User)
-  # ask:  Agent hỏi User trước mỗi lần query Brain
-  # off:  Tắt hoàn toàn (không query Brain)
-  consult_mode: "ask"
-
-  # ─── Trigger Từ Khóa ──────────────────────────────────────────────────
-  # Agent sẽ trigger tham vấn Brain khi User mention các cụm từ này
-  consult_triggers:
-    - "theo chuẩn"
-    - "theo quy định"
-    - "dựa vào tài liệu"
-    - "business logic"
-    - "requirements"
-    - "spec"
-    - "policy"
-    - "quy trình"
-
-  # ─── Fallback Khi Brain Offline ────────────────────────────────────────
-  # skip:  Bỏ qua, xử lý bình thường
-  # warn:  Cảnh báo User nhưng vẫn tiếp tục
-  # block: Dừng lại, yêu cầu User fix
-  fallback_if_offline: "warn"
-
-  # ─── Nguồn Đã Nạp (Auto-populated bởi /brain-sync) ────────────────────
-  sources: []
-  last_sync: ""                  # ISO timestamp lần sync gần nhất
+  # 2. Data Source - Domain knowledge for Math Grade 8
+  math_8_source:
+    notebook_id: "5f1288e2-b29d-42db-89c4-d8fb914fe08f"
+    title: "Sổ tay Toán 8"
+    purpose: "SGK Toán 8 GDPT 2018 - dùng cho Data Distillation & RAG"
+    mode: ask   # Agent hỏi trước khi query (vì data lớn, tốn token)
+    sources:
+      - "Kiến thức trọng tâm Toán 8 GDPT 2018"
+      - "Lý thuyết Toán lớp 8 - Loigiaihay.com"
+      - "Bảy hằng đẳng thức đáng nhớ – Wikipedia"
+      - "Phân tích đa thức thành nhân tử - VietJack"
+      - "Phương trình bậc nhất một ẩn - VietJack"
+      - "Tổng hợp dạng bài về tứ giác"
+      - "Các trường hợp đồng dạng của tam giác"
+      - "Định lí Thalès trong tam giác - VietJack"
+      - "Đề cương ôn tập giữa HK1 Toán 8 - Hoc247"
+      - "Tổng hợp Công thức Toán 8 - VietJack"
+      - "Kỹ năng ghi nhớ 7 hằng đẳng thức - YouTube"
