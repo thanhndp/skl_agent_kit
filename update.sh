@@ -21,7 +21,11 @@ fi
 echo ""
 echo "Đang sao chép cập nhật cấu hình vào thư mục .agents/..."
 
-# Copy an toàn đè lên .agents. Không làm ảnh hưởng src/ hay 1_input/
+# Bảo vệ User Config: Xóa thư mục config/memory khỏi bản tải về trước khi copy để không nghi đè thiết lập của bạn
+rm -rf "$TEMP_DIR/.agents/config" 2>/dev/null
+rm -rf "$TEMP_DIR/.agents/memory" 2>/dev/null
+
+# Copy an toàn các Rules và Workflows mới nhất
 cp -r "$TEMP_DIR"/.agents/* .agents/ 2>/dev/null
 cp -f "$TEMP_DIR"/setup.bat . 2>/dev/null
 cp -f "$TEMP_DIR"/setup.sh . 2>/dev/null

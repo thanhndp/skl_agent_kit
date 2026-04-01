@@ -21,7 +21,11 @@ if errorlevel 1 (
 echo.
 echo Dang sao chep cap nhat cau hinh vao thu muc .agents/...
 
-:: Copy an toan de len .agents. Khong lam anh huong src/ hay 1_input/
+:: Bao ve User Config: Xoa thu muc config/memory khoi ban tai ve truoc khi copy de khong ghi de thiet lap cua ban
+rmdir /s /q "%TEMP_DIR%\.agents\config" 2>nul
+rmdir /s /q "%TEMP_DIR%\.agents\memory" 2>nul
+
+:: Copy an toan cac Rules va Workflows moi nhat
 xcopy /Y /S /E "%TEMP_DIR%\.agents\*" ".agents\" >nul
 copy /Y "%TEMP_DIR%\setup.bat" "setup.bat" >nul
 copy /Y "%TEMP_DIR%\setup.sh" "setup.sh" >nul
