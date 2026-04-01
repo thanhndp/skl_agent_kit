@@ -24,6 +24,10 @@ if "%~1" neq "" (
     set /p choice="Nhap lua chon cua ban (1 hoac 2): "
 )
 
+if exist README.md (
+    ren README.md SKL_AGENT_KIT_README.md 2>nul
+)
+
 if "%choice%"=="1" (
     echo.
     echo Dang khoi tao mo hinh Data Pipeline...
@@ -37,6 +41,10 @@ if "%choice%"=="1" (
     echo Ban hay quang tat ca file bao cao vao day. Du la Excel, PDF, Anh hay Word, cu nem het vao! >> 1_input\README.md
     echo Sau do go lenh ^`/data-ingest^` de AI tu dong sap xep va phan luong. >> 1_input\README.md
 
+    echo # Data Pipeline Project > README.md
+    echo Du an duoc khoi tao tu SKL AGENT KIT. >> README.md
+    echo Vui long xem huong dan cua Framework tai `SKL_AGENT_KIT_README.md`. >> README.md
+
     echo Hoan tat khoi tao Data Pipeline!
 ) else if "%choice%"=="2" (
     echo.
@@ -47,6 +55,10 @@ if "%choice%"=="1" (
     
     echo # Cau truc nguon du an > src\README.md
     echo Chua ma nguon cho ung dung. >> src\README.md
+
+    echo # App Development Project > README.md
+    echo Du an duoc khoi tao tu SKL AGENT KIT. >> README.md
+    echo Vui long xem huong dan cua Framework tai `SKL_AGENT_KIT_README.md`. >> README.md
 
     echo Hoan tat khoi tao App Development!
 ) else (

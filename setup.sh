@@ -25,6 +25,10 @@ else
     read -p "Nhập lựa chọn của bạn (1 hoặc 2): " choice
 fi
 
+if [ -f "README.md" ]; then
+    mv README.md SKL_AGENT_KIT_README.md 2>/dev/null
+fi
+
 if [ "$choice" == "1" ]; then
     echo ""
     echo "Đang khởi tạo mô hình Data Pipeline..."
@@ -35,6 +39,10 @@ if [ "$choice" == "1" ]; then
     echo "Hãy quăng tất cả file báo cáo của bạn vào đây. Dù là Excel, PDF, Ảnh chụp hay Word, cứ ném hết vào!" >> 1_input/README.md
     echo "Sau đó gõ lệnh \`/data-ingest\` cho AI tự động sắp xếp phân luồng." >> 1_input/README.md
 
+    echo "# Data Pipeline Project" > README.md
+    echo "Dự án được khởi tạo từ SKL AGENT KIT." >> README.md
+    echo "Vui lòng xem hướng dẫn chi tiết của Framework tại \`SKL_AGENT_KIT_README.md\`." >> README.md
+
     echo "Hoàn tất khởi tạo Data Pipeline!"
     
 elif [ "$choice" == "2" ]; then
@@ -44,6 +52,10 @@ elif [ "$choice" == "2" ]; then
     
     echo "# Cấu trúc nguồn dự án" > src/README.md
     echo "Chứa mã nguồn cho ứng dụng." >> src/README.md
+
+    echo "# App Development Project" > README.md
+    echo "Dự án được khởi tạo từ SKL AGENT KIT." >> README.md
+    echo "Vui lòng xem hướng dẫn chi tiết của Framework tại \`SKL_AGENT_KIT_README.md\`." >> README.md
 
     echo "Hoàn tất khởi tạo App Development!"
     
