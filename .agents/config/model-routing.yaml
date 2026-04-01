@@ -3,13 +3,13 @@
 # Define routing rules and failover logic for LLM requests.
 # Strategy: Cost Optimization -> Fallback to High Availability
 
-default_router: "data_distillation_pipeline"
+default_router: "standard_pipeline"
 
 routers:
-  data_distillation_pipeline:
-    description: "Routing rule for generating training data. Prioritizes free Gemini, falls back to OpenRouter."
+  standard_pipeline:
+    description: "Default routing rule for standard operations. Prioritizes Gemini Flash, falls back to OpenRouter."
     
-    # Tier 1: Primary Model (Free, High Rate Limit)
+    # Tier 1: Primary Model (Fast, Cost-Effective)
     primary:
       provider: "google-aistudio"
       model: "gemini-2.5-flash"
@@ -23,22 +23,15 @@ routers:
         - "RESOURCE_EXHAUSTED"
         - "503"
         
-    # Tier 2: First Fallback (OpenRouter - Paid, Very Stable)
+    # Tier 2: First Fallback (OpenRouter)
     fallback_1:
       provider: "openrouter"
-      model: "google/gemini-2.5-flash" # Vẫn dùng flash qua openrouter để thống nhất format
+      model: "google/gemini-2.5-flash"
       api_key_env: "OPENROUTER_API_KEY"
       retry_attempts: 3
       retry_delay: 5
       timeout: 60
       fallback_on_errors: ["*"]
-
-    # Tier 3: Emergency Fallback (OpenRouter - Heavy reasoning if needed)
-    fallback_2:
-      provider: "openrouter"
-      model: "anthropic/claude-3.5-haiku" 
-      api_key_env: "OPENROUTER_API_KEY"
-      retry_attempts: 1
 
 providers:
   google-aistudio:
@@ -47,4 +40,4 @@ providers:
     base_url: "https://openrouter.ai/api/v1"
     headers:
       "HTTP-Referer": "https://skylineschool.edu.vn"
-      "X-Title": "Edu-SLM SaaS Project"
+      "X-Title": "SKL AGENT KIT Framework"

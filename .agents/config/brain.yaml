@@ -1,32 +1,21 @@
-# Brain Configuration - Edu-SLM SaaS Project
-# 2 NotebookLM notebooks serving different purposes
+# SKL AGENT KIT Brain Configuration
+# ---------------------------------------------------------
+# Define NotebookLM resources that the agent can access.
+# Run /brain-bootstrap or /brain-sync to set up project memory.
 
 notebooks:
-  # 1. Project Brain - Long-term memory for project architecture & plans
-  project_brain:
-    notebook_id: "6b0b6b0e-8dde-4808-a351-23c689423182"
-    title: "Edu-SLM SaaS Project Brain"
-    purpose: "Project architecture, MVP plan, coding rules, domain knowledge"
-    mode: auto  # Agent tự query khi cần
+  project_master_brain:
+    notebook_id: "your-notebook-id-here"
+    title: "Project Master Brain"
+    purpose: "Long-term memory for project architecture, MVP plan, domain rules"
+    mode: auto  # Agent tu query khi can thiet
     sources:
-      - "SKL AGENT KIT Architecture Summary"
-      - "Edu-SLM MVP Plan"
+      - "Project Requirements"
+      - "Architecture Document"
 
-  # 2. Data Source - Domain knowledge for Math Grade 8
-  math_8_source:
-    notebook_id: "5f1288e2-b29d-42db-89c4-d8fb914fe08f"
-    title: "Sổ tay Toán 8"
-    purpose: "SGK Toán 8 GDPT 2018 - dùng cho Data Distillation & RAG"
-    mode: ask   # Agent hỏi trước khi query (vì data lớn, tốn token)
-    sources:
-      - "Kiến thức trọng tâm Toán 8 GDPT 2018"
-      - "Lý thuyết Toán lớp 8 - Loigiaihay.com"
-      - "Bảy hằng đẳng thức đáng nhớ – Wikipedia"
-      - "Phân tích đa thức thành nhân tử - VietJack"
-      - "Phương trình bậc nhất một ẩn - VietJack"
-      - "Tổng hợp dạng bài về tứ giác"
-      - "Các trường hợp đồng dạng của tam giác"
-      - "Định lí Thalès trong tam giác - VietJack"
-      - "Đề cương ôn tập giữa HK1 Toán 8 - Hoc247"
-      - "Tổng hợp Công thức Toán 8 - VietJack"
-      - "Kỹ năng ghi nhớ 7 hằng đẳng thức - YouTube"
+  domain_knowledge_base:
+    notebook_id: "your-second-notebook-id-here"
+    title: "Domain Knowledge Database"
+    purpose: "Heavy domain documents (e.g. textbooks, legal documents, PRDs)"
+    mode: ask   # Agent se hoi User truoc khi query de tranh ton token
+    sources: []
