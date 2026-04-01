@@ -53,6 +53,8 @@ else
 fi
 
 echo ""
+git remote remove origin 2>/dev/null
+echo "Đồng bộ an toàn: Đã ngắt kết nối với Master Template Github để tránh push nhầm."
 echo "SKL AGENT KIT đã sẵn sàng hoạt động tại thư mục hiện tại."
 echo "Gõ 'antigravity' để triệu hồi Hệ điều hành AI của bạn."
 echo "=================================================="

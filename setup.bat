@@ -54,6 +54,8 @@ if "%choice%"=="1" (
 )
 
 echo.
+git remote remove origin 2>nul
+echo Dong bo an toan: Da ngat ket noi voi Master Template Github de tranh push nham.
 echo SKL AGENT KIT da san sang hoat dong tai thu muc hien tai.
 echo Go "antigravity" de trieu hoi He dieu hanh AI cua ban.
 echo ==================================================
