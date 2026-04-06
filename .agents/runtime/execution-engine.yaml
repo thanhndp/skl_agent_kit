@@ -16,6 +16,13 @@ pipeline:
     description: "Load agent state + entity memory"
     rule: memory-protocol.md
     required: true
+    validation:
+      - check: "brain.yaml notebook_id != 'your-notebook-id-here'"
+        severity: warn
+        message: "⚠️ Brain chưa setup. Chạy /brain-bootstrap trước khi sử dụng knowledge queries."
+      - check: "security-modes.yaml exists"
+        severity: warn
+        message: "⚠️ Không tìm thấy security-modes.yaml. Agent chạy ở default mode."
 
   - step: load_instructions
     description: "Load instruction layer (identity, role, task)"

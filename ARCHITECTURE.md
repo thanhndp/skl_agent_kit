@@ -162,9 +162,10 @@ Step 12: Log + Feedback
 ### Config Layer (WHAT — cấu hình gì)
 ```
 .agents/config/
-├── model-routing.yaml      # Model nào cho task nào
+├── model-routing.yaml      # Model nào cho task nào (tier mapping)
 ├── capabilities.yaml       # Agent làm được gì
 ├── cost-control.yaml       # Budget bao nhiêu
+├── security-modes.yaml     # 3 chế độ bảo mật (agile/standard/paranoid)
 ├── brain.yaml              # Brain kết nối ở đâu
 ├── agents.yaml             # Multi-agent setup
 └── webhooks.yaml           # External integrations

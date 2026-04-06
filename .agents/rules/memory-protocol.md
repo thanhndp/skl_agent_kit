@@ -1,10 +1,10 @@
 ---
-description: "Protocol quản lý bộ nhớ 3 tầng — Session, Brain, Entity — với decay, conflict resolution, confidence."
+description: "Protocol quản lý bộ nhớ 3 tầng — tập trung vào Tier 3 Entity Memory với 4-Type Taxonomy (User, Feedback, Project, Reference) theo chuẩn Claude Code."
 ---
 
-# SKL AGENT KIT Memory Protocol v2
+# SKL AGENT KIT Memory Protocol v2.0
 
-Agent cần "nhớ" để không xử lý mỗi task như người mới. Hệ thống memory 3 tầng + decay + conflict resolution.
+Hệ thống memory được thiết kế để Agent "nhớ" ngữ cảnh qua các phiên làm việc, giảm thiểu việc lặp lại hướng dẫn và xây dựng hiểu biết sâu sắc về dự án và người dùng.
 
 ## Kiến Trúc 3 Tầng
 
@@ -18,182 +18,94 @@ Agent cần "nhớ" để không xử lý mỗi task như người mới. Hệ t
 │   Specs, business rules, domain logic   │
 │   Storage: NotebookLM via MCP           │
 ├─────────────────────────────────────────┤
-│ Tier 3: Entity Memory                   │ ← Persistent, structured
-│   User profiles, preferences, history   │
+│ Tier 3: Entity Memory (4-Type Taxonomy) │ ← Persistent, structured
+│   User, Feedback, Project, Reference    │
 │   Storage: .agents/memory/entities.yaml │
 └─────────────────────────────────────────┘
 ```
 
-## Tier 1: Short-term (Session)
+---
 
-**Quản lý bởi:** Antigravity IDE session + Data Handoff files
+## Tier 3: The 4-Type Taxonomy
 
-**Nội dung:**
-- Conversation context hiện tại
-- Task state (đang làm gì, bước nào)
-- Recent tool results
+Dữ liệu bộ nhớ (Entity Memory) trong file `entities.yaml` ĐƯỢC CHIA THÀNH 4 LOẠI CỤ THỂ. Agent phải phân loại thông tin vào đúng type khi lưu trữ.
 
-**Lifecycle:** Mất khi session kết thúc
+> [!WARNING]
+> **What NOT to save:** Code patterns, project architecture, file paths, git history. Nếu có thể derive từ codebase hiện tại (bằng search, `git log`), đừng lưu vào memory bloat `entities.yaml`.
 
-**Persistence strategy:**
-- Ghi trạng thái quan trọng ra `docs/` (theo Data Handoff Protocol)
-- Session mới → đọc lại `docs/` để restore context
-- Dùng `/compact` khi context quá dài
+### 1. User Memory (`type: user`)
+Thông tin về vai trò, chuyên môn, trách nhiệm và phong cách của User.
+- **When to save:** Khi biết được title, cấp độ kỹ năng (Beginner/Expert), hay mục tiêu cá nhân.
+- **How to use:** Tùy chỉnh prompt và mức độ giải thích. (Ví dụ: Tránh giải thích "git là gì" cho Senior Backend Engineer).
+- **Ví dụ:** "User là giáo viên Toán, không rành kỹ thuật, cần giải thích step-by-step không dùng biệt ngữ."
 
-## Tier 2: Long-term (Brain)
+### 2. Feedback Memory (`type: feedback`)
+Các chỉ đạo của User về CÁCH làm việc: Cả những điều cần tránh (corrections) VÀ những quyết định đúng đắn (confirmations).
+- **When to save:** Bất cứ khi nào User nói "đừng làm X", "thế này tốt hơn", "chuẩn rồi, giữ nguyên cách này". **Lưu cả lời khen/xác nhận**, không chỉ lưu lỗi sai.
+- **Body structure:** Phải có: {Rule} + **Why:** {Reason} + **How to apply:** {Context}. Biết *tại sao* giúp áp dụng linh hoạt.
+- **Ví dụ:** "Rule: Không tự động chạy shell command. Why: Lần trước chạy sai script deploy. How to apply: Luôn Set SafeToAutoRun: false."
 
-**Quản lý bởi:** NotebookLM notebook (per-project)
+### 3. Project Memory (`type: project`)
+Bối cảnh dự án, mục tiêu, constraint tạm thời không thể tìm thấy trong code.
+- **When to save:** Khi có deadline, thông báo freeze code, hoặc lý do tại sao một tính năng tồn tại. Phải convert relative time ("Thứ Năm") thành absolute date ("2026-04-10").
+- **Ví dụ:** "Deadline demo Phase 1 là 2026-04-15. Why: Có lịch họp BGH. How to apply: Ưu tiên tính năng core, bỏ qua nice-to-have từ nay đến đó."
 
-**Nội dung:**
-- Project specs, requirements
-- Business rules, policies
-- Domain knowledge
-- Past decisions & rationale
+### 4. Reference Memory (`type: reference`)
+Con trỏ đến hệ thống hoặc tài liệu external.
+- **When to save:** Khi User đưa URL doc, Notion, Jira board, hay chỉ định nơi xem log.
+- **Ví dụ:** "Tài liệu API của trường lấy tại: intra.skylineschool.edu.vn/api-docs"
 
-**Lifecycle:** Persistent — tồn tại vĩnh viễn trong NotebookLM
+---
 
-**Operations:**
-- Setup: `/brain-bootstrap`
-- Sync: `/brain-sync`
-- Query: Tự động theo `brain-connector.md`
+## Cấu trúc `entities.yaml`
 
-## Tier 3: Entity Memory
-
-**Quản lý bởi:** `.agents/memory/entities.yaml`
-
-**Nội dung:**
-- User profiles (tên, vai trò, preferences)
-- Context notes (quy ước dự án, decisions)
-- Interaction history (summary, không raw logs)
-
-**Lifecycle:** Persistent trong project, version-controlled
-
-## Memory Confidence Scores
-
-Mỗi memory item có confidence score:
-
-| Confidence | Mô tả | Ví dụ |
-|-----------|--------|-------|
-| **1.0** | Verified fact | User tự cung cấp, docs chính thức |
-| **0.8** | High confidence | Inferred từ nhiều interactions |
-| **0.6** | Medium | Inferred từ 1-2 interactions |
-| **0.4** | Low | Đoán từ context, chưa confirm |
-| **< 0.3** | Unreliable | Cũ quá hoặc mâu thuẫn → nên xóa |
-
-**Trong entities.yaml:**
 ```yaml
 entities:
-  - name: "thanhndp"
-    role: "admin"
-    confidence: 1.0    # User tự giới thiệu
-    source: "user_provided"
-    date: "2026-03-30"
+  # Ví dụ 1: User Profile
+  - type: user
+    name: User Profile
+    content: "Giáo viên Toán cấp 2, ưu tiên tốc độ ra đề thi."
+    confidence: 1.0
+    date: "2026-04-02"
 
-  - preference: "thích output structured bảng"
-    confidence: 0.8    # Thấy pattern lặp lại 3 lần
-    source: "inferred"
-    date: "2026-03-28"
+  # Ví dụ 2: Feedback
+  - type: feedback
+    name: Bỏ qua giải thích kỹ thuật
+    content: "Rule: Chỉ output command, không giải thích dài dòng. Why: User cần làm nhanh. How to apply: Trong mọi query kỹ thuật."
+    confidence: 0.8
+    date: "2026-04-02"
 ```
 
-## Memory Decay (Lão hóa)
+---
 
-Memory KHÔNG có giá trị vĩnh viễn — giảm dần theo thời gian:
+## Memory Drift Detection & Decay
 
-```
-decay_rules:
+> [!CAUTION]
+> **Memory Drift Caveat:** "The memory says X exists" is NOT the same as "X exists now".
+> Trước khi khuyên User dựa trên memory (VD: sửa file A), Agent PHẢI VERIFY bằng cách đọc file. Nếu memory sai lệch so với codebase hiện tại, hãy tin codebase và xoá/update memory đoạn đó.
 
-  time_decay:
-    - < 7 ngày: weight × 1.0 (nguyên vẹn)
-    - 7-30 ngày: weight × 0.8
-    - 30-90 ngày: weight × 0.5
-    - > 90 ngày: weight × 0.3
-    - > 180 ngày: flag_for_cleanup
+### Memory Decay Rules
 
-  exception_no_decay:
-    - User identity (name, role) → không decay
-    - Project conventions → không decay
-    - Entries marked "permanent": true → không decay
+Memory KHÔNG có giá trị vĩnh viễn (đặc biệt `project` memory).
 
-  auto_cleanup:
-    - confidence < 0.3 AND age > 90 ngày → archive
-    - Mâu thuẫn với entry mới hơn → archive entry cũ
-```
+1. `user` & `reference`: **Không decay**. (Tên, role ít thay đổi).
+2. `feedback`: **Decay chậm**. (Giảm confidence 0.1 mỗi 30 ngày nếu không được củng cố).
+3. `project`: **Decay nhanh**. Sau 90 ngày tự chuyển thành `archived: true` trừ khi User confirm lại.
 
-## Conflict Resolution
+### Memory Maintenance Triggers
 
-Khi memory items mâu thuẫn nhau:
+1. **Session Start (Step 1 — load_state):**
+   Quét `entities.yaml`. Nếu có `project` memory > 180 ngày chưa update: Đánh hashtag cảnh báo `⚠️ Stale Memory` vào log.
+2. **Weekly Review (`/project-status`):**
+   Agent liệt kê active vs archived memories.
+3. **Manual (`memory cleanup`):**
+   Theo yêu cầu User để dọn các rule lỗi thời.
 
-```
-conflict_resolution:
+---
 
-  strategy: prefer_recent_verified
+## Memory Retrieval Logic
 
-  rules:
-    1. Prefer recent over old (recency wins)
-    2. Prefer verified source over inferred
-    3. Prefer high confidence over low confidence
-    4. If equal → ask User to clarify
-
-  resolution_order:
-    - user_explicit (User nói trực tiếp) → ALWAYS WINS
-    - brain_verified (từ NotebookLM docs) → HIGH
-    - user_inferred (Agent suy luận từ behavior) → MEDIUM
-    - memory_old (entry > 30 ngày) → LOW
-```
-
-**Ví dụ conflict:**
-```
-Memory cũ: "User thích output dạng bullet list" (30 ngày trước)
-Memory mới: "User yêu cầu output dạng bảng" (hôm nay)
-→ Resolution: Cập nhật preference = "bảng", archive entry cũ
-```
-
-## Quy Trình Load Memory
-
-```
-Task nhận từ User
-  → 1. Load entities.yaml (Tier 3) — biết User là ai
-  → 2. Apply decay weights — data cũ weight thấp hơn
-  → 3. Filter by relevance — chỉ lấy memory liên quan task
-  → 4. Compress to bullet_insights — max 5 items
-  → 5. Check brain.yaml — Brain có enabled không?
-  → 6. Orchestrator classify intent
-  → 7. Context Builder inject memory (với confidence scores)
-  → 8. Execute task
-  → 9. Update entities.yaml nếu có info mới
-```
-
-## Memory Selection cho Context
-
-Không dump toàn bộ memory — lọc trước khi inject:
-
-```
-memory_selection:
-  filter_by:
-    - relevance_score >= 0.4
-    - recency (prefer last 10 interactions)
-    - importance (high > medium > low)
-    - confidence >= 0.5
-
-  compression:
-    format: bullet_insights
-    max_items: 5
-
-  # Output ví dụ:
-  # - User: thanhndp, admin (confidence: 1.0)
-  # - Thích output structured/bảng (confidence: 0.8)
-  # - Đang làm SKL AGENT KIT v3.0 (confidence: 1.0)
-  # - Ưu tiên tiếng Việt cho reports (confidence: 0.6)
-```
-
-## Anti-Patterns
-
-```
-❌ Nhớ tất cả mọi thứ → token bloat
-❌ Không nhớ gì cả → mỗi lần như người mới
-❌ Ghi raw conversation vào memory → quá dài, irrelevant
-❌ Không ghi source/date → memory không verifiable
-❌ Override entity memory không hỏi User
-❌ Tin memory cũ hơn data mới → stale decisions
-❌ Không có confidence score → treat mọi memory ngang nhau
-```
+**When to access memory:**
+- Agent tự động xem xét `entities.yaml` ở đầu phiên để hiểu user context.
+- MUST access memory nếu User explicitly nói "hãy nhớ...", "theo như lần trước...".
+- **IGNORE CAVEAT:** Nếu User bảo "bỏ qua luật X", hãy làm việc như thể luật X CHƯA TỪNG TỒN TẠI trong memory. Đừng reply kiểu "Mặc dù luật X bảo thế nhưng theo ý bạn tôi sẽ...". Im lặng và tuân theo.

@@ -1,0 +1,46 @@
+# SKL AGENT KIT - Orchestrator Security & Performance Config
+# Định cấu hình Giới hạn (Guardrails) để bật/tắt sự nặng nề của hệ thống khi chạy AI đa luồng.
+# Chọn một trong 3 chế độ (mode): agile | standard | paranoid
+
+orchestrator_mode: "standard"
+
+# -------------------------------------------------------------
+# CẤP ĐỘ 1: AGILE (Linh hoạt, Tốc độ cao - Cẩn thận khi dùng)
+# Giống như "Xe Đạp": Không khiên chắn, ưu tiên chạy max tốc độ
+# Phù hợp: Code cá nhân, Phân tích dữ liệu nội bộ không rò rỉ.
+# -------------------------------------------------------------
+modes:
+  agile:
+    max_concurrent_workers: 10          # Lệnh đẻ con cho phép bung tối đa 10 Agent
+    enforce_network_ban: false          # Cho phép Python gọi API ra ngoài mạng (Internet)
+    python_batch_chunk_size: 50         # Tải một lúc 50 file Excel vào RAM
+    timeout_minutes: 60                 # Hạn chót giết tiến trình: 1 tiếng
+    budget_limit_tokens: 0              # 0 = Không giới hạn, đốt tẹt ga
+    require_pid_tracking: false         # Khi Agent Mẹ tắt, con vẫn có quyền chạy ngầm (Background Task)
+
+# -------------------------------------------------------------
+# CẤP ĐỘ 2: STANDARD (Cân bằng - Khuyên dùng)
+# Giống như "Ô tô SUV": Áo giáp vừa đủ, túi khí bung đúng lúc.
+# Phù hợp: Pipeline công ty, Task hàng ngày cho nhân viên.
+# -------------------------------------------------------------
+  standard:
+    max_concurrent_workers: 5           # Trần 5 agents song song chống sập máy
+    enforce_network_ban: true           # Chặn Python Pipeline gọi requests ra ngoài chống Data Leak
+    python_batch_chunk_size: 10         # Cắt nhỏ RAM, tải 10 file/lần
+    timeout_minutes: 15                 # Sau 15p ko xong sẽ tự Kill tiến trình con
+    budget_limit_tokens: 50000          # Cảnh báo và dừng nếu 1 Agent cắn quá 50k Tokens
+    require_pid_tracking: true          # Mẹ chết thì các Con phải tự sát theo (Chống Zombie)
+
+# -------------------------------------------------------------
+# CẤP ĐỘ 3: PARANOID (Tuyệt đối an toàn - Môi trường Kín)
+# Giống như "Lô Cốt Quân Sự": Phòng vệ cao nhất
+# Phù hợp: Chạy AI Prompt sinh từ nguồn ngoài chống Prompt Injection.
+# -------------------------------------------------------------
+  paranoid:
+    max_concurrent_workers: 2           # Giới hạn cực thấp, chỉ cho phép 2 tiến trình
+    enforce_network_ban: true           # Chặn tuyệt đối internet trong Data Processing
+    python_batch_chunk_size: 1          # An toàn RAM: Xử lý Line by Line (Ngốn cực ít RAM nhưng chậm)
+    timeout_minutes: 5                  # Án tử 5 phút
+    budget_limit_tokens: 10000          # Quản lý ví tiền siêu ngặt
+    require_pid_tracking: true          # Kill tree ngay lập tức
+    force_read_only_agents: true        # Các Agent con bị khóa Bash Terminal (Chống Hacker)

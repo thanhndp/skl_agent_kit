@@ -4,26 +4,37 @@
 export LANG=C.UTF-8
 
 echo "=================================================="
-echo "        SKL AGENT KIT INIT SYSTEM"
+echo "        SKL AGENT KIT INIT SYSTEM v3.5"
 echo "=================================================="
 echo ""
 echo "Chào mừng bạn đến với SKL AGENT KIT Framework!"
-echo "Hãy chọn mô hình dự án bạn muốn thiết lập:"
 echo ""
-echo "[1] Data Pipeline (Xử lý dữ liệu)"
-echo "    - Mục đích: Crawl, Xử lý dữ liệu lớn, ETL, Phân tích."
-echo "    - Cấu trúc: 1_input (chỉ đọc), 2_process, 3_output."
-echo ""
-echo "[2] App Development (Lập trình ứng dụng)"
-echo "    - Mục đích: Xây dựng web/app với React, Node, Python..."
-echo "    - Cấu trúc: src/, docs/, tests/."
-echo ""
+echo "Để tối ưu hóa trải nghiệm AI, bạn thuộc nhóm nào?"
+echo "[1] Beginner (Sử dụng đơn giản, ưu tiên an toàn, hướng dẫn chi tiết)"
+echo "[2] Expert (Tốc độ cao, đa luồng multi-agent, bỏ qua giải thích)"
+read -p "Nhập lựa chọn của bạn (1 hoặc 2): " profile
 
-if [ -n "$1" ]; then
-    choice="$1"
+if [ "$profile" == "2" ]; then
+    PROFILE_DESC="AI Engineer. Thích sự ngắn gọn, chạy đa luồng multi-agent. Profile: expert."
 else
-    read -p "Nhập lựa chọn của bạn (1 hoặc 2): " choice
+    PROFILE_DESC="Giáo viên/Quản lý. Không rành code. Cần AI giải thích step-by-step. Profile: beginner."
 fi
+
+# Khởi tạo Memory cho AI
+cat <<EOF > .agents/memory/entities.yaml
+entities:
+  - type: user
+    name: "User Profile"
+    content: "$PROFILE_DESC"
+    confidence: 1.0
+    date: "$(date +%Y-%m-%d)"
+EOF
+
+echo ""
+echo "Hãy chọn mô hình dự án bạn muốn thiết lập:"
+echo "[1] Data Pipeline (Xử lý dữ liệu, ETL)"
+echo "[2] App Development (Lập trình ứng dụng Web/Node)"
+read -p "Nhập lựa chọn của bạn (1 hoặc 2): " choice
 
 if [ -f "README.md" ]; then
     mv README.md SKL_AGENT_KIT_README.md 2>/dev/null
@@ -35,29 +46,42 @@ if [ "$choice" == "1" ]; then
     mkdir -p 1_input/archived_docs 1_input/structured 2_process 3_output
     
     echo "# Thùng Chứa Dữ Liệu (Smart Funnel)" > 1_input/README.md
-    echo "Thư mục này là chỗ để Nhân viên vận hành ném file thô vào (Drag & Drop)." >> 1_input/README.md
-    echo "Hãy quăng tất cả file báo cáo của bạn vào đây. Dù là Excel, PDF, Ảnh chụp hay Word, cứ ném hết vào!" >> 1_input/README.md
-    echo "Sau đó gõ lệnh \`/data-ingest\` cho AI tự động sắp xếp phân luồng." >> 1_input/README.md
+    echo "Ném file thô vào (Drag & Drop) và gọi \`/data-ingest\`." >> 1_input/README.md
+
+    # Tạo Dữ Liệu Mẫu
+    echo -e "id,name,score\n1,Alice Nguyen,85\n2,Bob Tran,92" > 1_input/structured/sample_data_1.csv
+    echo -e "id,name,score\n3,Charlie Pham,78" > 1_input/structured/sample_data_2.csv
 
     echo "# Data Pipeline Project" > README.md
     echo "Dự án được khởi tạo từ SKL AGENT KIT." >> README.md
-    echo "Vui lòng xem hướng dẫn chi tiết của Framework tại \`SKL_AGENT_KIT_README.md\`." >> README.md
+    echo "Gõ lệnh \`python 2_process/base_parallel_engine.py\` để test tự động xử lý." >> README.md
 
-    echo "Hoàn tất khởi tạo Data Pipeline!"
+    if [ -f ".agents/templates/base_parallel_engine.py" ]; then
+        cp .agents/templates/base_parallel_engine.py 2_process/base_parallel_engine.py 2>/dev/null
+    fi
+
+    echo "Hoàn tất khởi tạo Data Pipeline! (Đã tạo sẵn Dummy Data)"
     
 elif [ "$choice" == "2" ]; then
     echo ""
     echo "Đang khởi tạo mô hình App Development..."
     mkdir -p src docs tests
     
-    echo "# Cấu trúc nguồn dự án" > src/README.md
-    echo "Chứa mã nguồn cho ứng dụng." >> src/README.md
+    # Tạo Project Mẫu
+    cat <<EOF > package.json
+{
+  "name": "skl-app",
+  "version": "1.0.0",
+  "scripts": { "start": "node src/index.js" }
+}
+EOF
+    echo 'console.log("Chào mừng đến với ứng dụng dành cho SKL AGENT KIT! Hệ thống hoạt động hoàn hảo.");' > src/index.js
 
     echo "# App Development Project" > README.md
     echo "Dự án được khởi tạo từ SKL AGENT KIT." >> README.md
-    echo "Vui lòng xem hướng dẫn chi tiết của Framework tại \`SKL_AGENT_KIT_README.md\`." >> README.md
+    echo "Gõ lệnh \`npm start\` hoặc \`node src/index.js\` để test." >> README.md
 
-    echo "Hoàn tất khởi tạo App Development!"
+    echo "Hoàn tất khởi tạo App Development (Đã tạo sẵn package.json và index.js)."
     
 else
     echo ""
@@ -67,7 +91,17 @@ fi
 
 echo ""
 git remote remove origin 2>/dev/null
-echo "Đồng bộ an toàn: Đã ngắt kết nối với Master Template Github để tránh push nhầm."
-echo "SKL AGENT KIT đã sẵn sàng hoạt động tại thư mục hiện tại."
-echo "Gõ 'antigravity' để triệu hồi Hệ điều hành AI của bạn."
-echo "=================================================="
+echo "=================================================================="
+echo "✨ [THÀNH CÔNG] DỰ ÁN ĐÃ SẴN SÀNG ĐỂ CHẠY CẢ CODE LẪN AI!"
+echo ""
+echo "1️⃣  TEST TÍNH NĂNG (Không cần AI):"
+if [ "$choice" == "1" ]; then
+    echo "    Chạy lệnh: python 2_process/base_parallel_engine.py"
+else
+    echo "    Chạy lệnh: node src/index.js"
+fi
+echo ""
+echo "2️⃣  KHỞI ĐỘNG ANTIGRAVITY IDE (Mặc định)"
+echo "    Gõ lệnh: antigravity"
+echo "    Sau đó dán tin nhắn này: \"Hãy đọc README.md và đề xuất công việc tiếp theo.\""
+echo "=================================================================="

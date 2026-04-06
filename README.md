@@ -17,13 +17,14 @@ git clone https://github.com/thanhndp/skl_agent_kit.git .
 setup.bat          # Windows
 ./setup.sh         # Mac/Linux
 
-# 3. Mở IDE → gọi Agent
+# 3. Khởi động AI
+antigravity        # 🚀 Triệu hồi Antigravity IDE (Mặc định)
+/onboard           # 🆕 Bắt đầu Socratic Interview để cài đặt Profile
 /project-status    # Xem tổng quan
-/brain-bootstrap   # Kết nối Brain (tùy chọn)
+/brain-bootstrap   # Kết nối Brain
 ```
 
-> Chỉ cần 3 bước. Phần còn lại Agent tự xử lý dựa trên rules trong `.agents/`.
-> Đọc tiếp bên dưới nếu muốn hiểu kiến trúc bên trong.
+> **Bạn chưa có Antigravity?** Bạn cũng có thể mở thư mục này bằng AI Editor khác như Cursor hoặc Windsurf và copy prompt mà script `setup` vừa tạo vào chat.
 
 ---
 

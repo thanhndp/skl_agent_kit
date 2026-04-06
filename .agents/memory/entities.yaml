@@ -1,44 +1,36 @@
 # =============================================================================
-# SKL AGENT KIT Entity Memory
+# SKL AGENT KIT Entity Memory (Tier 3)
 # =============================================================================
-# Auto-populated by Agent during interactions.
-# Agent thêm entries khi phát hiện thông tin mới về user, project, decisions.
-# KHÔNG xóa entries cũ trừ khi User yêu cầu.
+# Taxonomy: 4 Types
+# - type: user      (Profile, preferences, skill level)
+# - type: feedback  (Corrections & confirmations on HOW to work)
+# - type: project   (Context, goals, deadlines not in code)
+# - type: reference (Pointers to external documents/tools)
 # =============================================================================
 
-# ─── User Profiles ──────────────────────────────────────────────────────────
-# Lưu thông tin về những người tương tác với Agent
-users: []
-  # Ví dụ:
-  # - id: "user_001"
-  #   name: "Nguyễn Văn A"
-  #   role: "developer"           # developer | manager | admin | user
-  #   preferences:
-  #     language: "vi"            # vi | en
-  #     detail_level: "concise"   # concise | detailed
-  #     output_format: "markdown" # markdown | plain | json
-  #   last_interaction: "2026-03-30"
-  #   notes: "Thích output dạng bảng, không thích văn xuôi dài"
+entities:
+  # Ví dụ (Beginner Profile Default):
+  # - type: user
+  #   name: "User Profile"
+  #   content: "Giáo viên/Người quản lý trường học. Không rành công nghệ sâu."
+  #   confidence: 1.0
+  #   date: "2026-04-02"
+  
+  # - type: feedback
+  #   name: "Hướng dẫn giải thích"
+  #   content: "Rule: Luôn dùng ngôn ngữ dễ hiểu. Why: User không rành kỹ thuật. How to apply: Tránh output raw code cho người mới."
+  #   confidence: 0.8
+  #   date: "2026-04-02"
 
-# ─── Project Context Notes ──────────────────────────────────────────────────
-# Các quy ước, decisions, context đặc thù của project
-context_notes: []
-  # Ví dụ:
-  # - key: "naming_convention"
-  #   value: "Dùng camelCase cho JS, snake_case cho Python"
-  #   source: "user_mention"
-  #   date: "2026-03-30"
-  #
-  # - key: "deployment_target"
-  #   value: "Vercel cho frontend, Railway cho backend"
-  #   source: "project_config"
-  #   date: "2026-03-30"
+  # Ghi chú hiện tại (Migrated từ bản cũ):
+  - type: user
+    name: "thanhndp"
+    content: "Admin. Ngôn ngữ tiếng Việt hoặc Song ngữ (Bilingual). Thích output dạng bảng / markdown."
+    confidence: 1.0
+    date: "2026-04-02"
 
-# ─── Interaction History (Summary) ──────────────────────────────────────────
-# Tóm tắt các tương tác quan trọng (KHÔNG lưu raw conversation)
-history: []
-  # Ví dụ:
-  # - date: "2026-03-30"
-  #   summary: "Setup Brain Architecture, deploy v2.0"
-  #   outcome: "success"
-  #   artifacts: ["docs/spec.md", "README.md"]
+  - type: feedback
+    name: "Cấu trúc phản hồi"
+    content: "Rule: Viết tài liệu dạng Song ngữ (Tiếng Việt & English). Why: SKL AGENT KIT nhắm đến user Beginner. How to apply: Các template Hướng dẫn phải áp dụng ngay."
+    confidence: 1.0
+    date: "2026-04-02"

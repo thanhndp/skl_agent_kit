@@ -1,169 +1,77 @@
 ---
-description: "Orchestrator v2 — Multi-intent classification, execution planning, guardrail checkpoints."
+description: "Orchestrator v3 — Coordinator Mode (Phase-based Multi-Agent Orchestration), Execution Planning, and Guardrail Checkpoints."
 ---
 
-# SKL AGENT KIT Orchestrator v2
+# SKL AGENT KIT Orchestrator v3 (Coordinator Mode)
 
-Rule đọc đầu tiên khi Agent nhận task. Quyết định luồng xử lý trước khi mọi rule khác.
+Rule đọc đầu tiên khi Agent nhận task chuyên sâu hoặc yêu cầu dùng profile "Expert/Intermediate".
+Hệ thống vận hành theo mô hình Multi-Agent Coordinator lấy cảm hứng từ kiến trúc của Claude Code.
 
-## Execution Flow (6 Steps)
+## 1. The Coordinator / Worker Pattern
 
-```
-User Input
-  → 1. Pre-check
-  → 2. Classify Intent (multi-label)
-  → 3. Build Execution Plan
-  → 4. Select Capabilities (composable)
-  → 5. Build Context (→ context-builder.md)
-  → 6. Execute Steps (with guardrail checkpoints)
-  → 7. Log Feedback (→ feedback-logger.md)
-```
+Thay vì cố gắng code và nghĩ trong cùng một lúc, Agent hoạt động với tư cách là **Coordinator** (Người điều phối).
+Coordinator sẽ chia nhỏ tác vụ và chạy theo 4 Phase riêng biệt.
 
-## Step 1: Pre-check
+### Phase 1: Research (Khám phá)
+- Không chạm vào code. Chỉ dùng tools để đọc docs, search, chạy lệnh list files, xem memory (`entities.yaml`).
+- Mục tiêu: Hiểu rõ codebase hiện tại, constraint của project, và cách API hoạt động.
 
-Trước khi classify, kiểm tra 3 điều kiện:
+### Phase 2: Synthesis (Tổng hợp & Lên Plan)
+- Coordinator tổng hợp thông tin từ Phase 1 và viết Spec (tính năng) hoặc Plan (lộ trình sửa bug).
+- *Lưu ý:* Lưu output vào artifacts (`task.md`, `implementation_plan.md`) thay vì định dạng XML để duy trì sự nhất quán của SKL AGENT KIT.
+- Đặt `RequestFeedback: true` nếu đụng đến phá vỡ kiến trúc (Breaking changes).
 
-| Check | Hỏi | Nếu KHÔNG |
-|-------|-----|-----------|
-| **Context đủ chưa?** | User cung cấp đủ info để classify? | → Hỏi clarification |
-| **Cần tool không?** | Task yêu cầu file, API, database? | → Mark `tools_required` |
-| **Sensitive không?** | Task liên quan xóa/gửi/deploy? | → Mark `confirmation_required` |
+### Phase 3: Implementation (Thực thi - Giao việc cho Worker)
+- Coordinator "spawn" các quá trình/tool calls. Ở profile Expert, có thể chạy song song (Concurrent Multi-Agent) nhiều tool calls để sửa nhiều file cùng lúc.
+- Anti-pattern: Không sửa 1 file nhỏ lẻ xong vội vã review. Phải chờ các worker (tool calls) xong hết cho 1 cụm tính năng.
 
-```
-pre_check:
-  is_context_sufficient?
-    → NO → ask_clarification (Socratic Gate)
-    → YES → continue
-  is_tool_required?
-    → YES → flag for tool preparation
-  is_sensitive_action?
-    → YES → flag confirmation_required
-```
+### Phase 4: Verification (Kiểm chứng)
+- Chạy test, build command, hoặc dùng browser agent để kiểm tra UI.
+- Ghi log lại lỗi để fix (vòng lặp về lại Phase 1 hoặc 3).
 
-## Step 2: Classify Intent (Multi-label)
+---
 
-Agent phân loại **1 hoặc nhiều intent** từ 5 nhóm:
+## 2. Multi-intent Classification (Dành cho Quick Tasks)
+
+Nếu task đơn giản và không cần Coordinator Mode, Agent phân loại intent:
 
 | Intent | Dấu hiệu | Ví dụ |
 |--------|-----------|-------|
-| `knowledge_query` | Hỏi thông tin, quy định, giải thích | "X là gì?", "theo chuẩn nào?" |
-| `action_request` | Thực hiện hành động cụ thể | "gửi email", "tạo file", "deploy" |
-| `analysis` | Phân tích, so sánh, đánh giá | "phân tích file này", "so sánh A-B" |
+| `knowledge_query` | Hỏi thông tin, quy định | "X là gì?", "theo chuẩn nào?" |
+| `action_request` | Thực hiện hành động | "gửi email", "tạo file", "deploy" |
+| `analysis` | Phân tích, đánh giá | "phân tích file này", "so sánh A-B" |
 | `creative` | Tạo nội dung mới | "viết báo cáo", "tạo slide" |
-| `system` | Thao tác code, debug, config | "fix bug", "refactor" |
+| `system` | Thao tác code, config | "fix bug", "refactor" |
 
-### Multi-intent Classification
+---
 
-```
-type: multi_label
+## 3. Delegation Anti-Patterns (Cấm kỵ khi làm Coordinator)
 
-Ví dụ:
-  "Phân tích dữ liệu rồi đề xuất và tạo file"
-  → intents: [analysis, creative]
+Khi hoạt động trong Coordinator Mode, Agent PHẢI TRÁNH các lỗi kinh điển sau:
 
-  "Kiểm tra quy định rồi gửi email thông báo"
-  → intents: [knowledge_query, action_request]
-```
+1. ❌ **Micro-management:** Quá tỉ mỉ vào 1 file trong khi hệ thống đang vỡ diện rộng. Phải nhìn bức tranh tổng thể (`Synthesis`).
+2. ❌ **Dumping Code:** In ra màn hình console hàng trăm dòng code thay vì dùng tool `write_to_file`. Luôn giao việc ghi file cho Tool (Worker).
+3. ❌ **Blind Delegation:** Giao việc (cập nhật file) mà không kiểm tra (Phase 4). Luôn luôn phải verify.
+4. ❌ **Infinite Loop:** Gặp 1 lỗi test 5 lần không sửa được. Cấm thử lại cùng 1 đoạn code quá 3 lần. Nếu failed → Lùi lại Phase 1 (Research) hoặc báo User.
 
-### Confidence & Fallback
+---
 
-```
-confidence_threshold: 0.7
+## 4. Artifact-Based Handoff
 
-if confidence >= threshold:
-  → route bình thường
-if confidence < threshold AND > 0.4:
-  → fallback: qa + analysis (an toàn nhất)
-if confidence < 0.4:
-  → ask_clarification: "Bạn muốn tôi tìm thông tin, phân tích, hay thực hiện hành động?"
-```
+Khác với các hệ thống nội bộ gửi event XML, SKL AGENT KIT giao tiếp các Phase thông qua **Artifacts** (Markdown files lưu trong `brain/`):
+- `implementation_plan.md`: Lưu Plan (Phase 2).
+- `task.md`: Lưu Check-list các file/worker cần chạy (Phase 3).
+- `walkthrough.md`: Báo cáo quá trình sau khi hoàn tất (Phase 4).
 
-## Step 3: Build Execution Plan
+> **Profile Limit:**
+> Số lượng "worker" (tức là tool calls chạy song song tối đa) phụ thuộc vào config `max_workers` trong `.agents/config/profiles.yaml` (Beginner: 2, Expert: 10). Nếu User là Beginner, Coordinator phải làm chậm, chia nhỏ hơn nữa.
 
-Agent KHÔNG nhảy thẳng vào execute. Phải lập kế hoạch trước:
+---
 
-### Single-intent Plan
-```
-intent: analysis
-plan:
-  - step_1: gather_data
-  - step_2: analyze
-  - step_3: output
-```
-
-### Multi-intent Plan
-```
-intents: [analysis, action_request]
-plan:
-  - step_1: gather_data (Brain + Tools)
-  - step_2: analyze
-  - step_3: recommend
-  - step_4: confirm_with_user     ← guardrail checkpoint
-  - step_5: execute_action
-  - step_6: output + log
-```
-
-### Plan Templates
-
-| Pattern | Steps | Khi nào |
-|---------|-------|---------|
-| **query_only** | gather → answer | Hỏi đáp đơn giản |
-| **analyze_recommend** | gather → analyze → recommend | Phân tích + đề xuất |
-| **analyze_execute** | gather → analyze → confirm → execute | Phân tích rồi hành động |
-| **create_flow** | gather_ref → create → review → output | Tạo nội dung |
-| **full_flow** | gather → analyze → recommend → confirm → execute → log | Luồng đầy đủ |
-| **debug_fix** | reproduce → diagnose → fix → verify | Sửa lỗi |
-
-## Step 4: Route To Layer
-
-| Intent | Primary Route | Brain? | Tools? |
-|--------|--------------|--------|--------|
-| `knowledge_query` | **Brain** | Luôn luôn | Nếu cần realtime |
-| `action_request` | **Tools** | Nếu cần specs trước | Luôn luôn |
-| `analysis` | **Brain + Local** | Nếu cần domain context | Nếu cần data |
-| `creative` | **Skills + Brain** | Nếu cần reference | Nếu cần generate files |
-| `system` | **Direct coding** | Hiếm khi | Nếu cần run commands |
-
-## Step 5: Guardrail Checkpoints
+## 5. Quy trình Guardrails (Safety Checkpoints)
 
 Guardrails KHÔNG tách riêng — gắn trực tiếp vào execution flow:
 
-```
-execution_flow:
-
-  before_gather:
-    → permission_check (permission-guard.md)
-
-  before_tool_call:
-    → safety_check (safety-guard.md)
-    → permission_check (nếu sensitive data)
-
-  before_execute:
-    → confirmation_required (nếu destructive action)
-
-  before_output:
-    → data_leak_check (permission-guard.md Lớp 3)
-    → source_attribution (context-builder.md)
-```
-
-## Step 6: Áp Dụng Rules Tiếp Theo
-
-```
-1. orchestrator.md        ← BẠN ĐANG Ở ĐÂY
-2. instruction-layer.md   ← Identity + role + task instructions
-3. context-builder.md     ← Build context theo intent + plan
-4. brain-connector.md     ← Nếu route đến Brain
-5. safety-guard.md        ← Guardrail checkpoint (inline)
-6. permission-guard.md    ← Permission checkpoint (inline)
-7. data-handoff.md        ← Ghi output ra file
-8. feedback-logger.md     ← Log kết quả + close feedback loop
-```
-
-## Nguyên Tắc
-
-1. **Plan trước, execute sau** — Mọi multi-step task phải có plan
-2. **Không expose routing** — User nhận kết quả, không cần biết intent
-3. **Mặc định an toàn** — Uncertain → chọn route cần confirmation
-4. **Capability-first** — Chọn từ `capabilities.yaml`, không chọn mode
-5. **Guardrails inline** — Checkpoint ở mỗi bước, không kiểm cuối cùng
-6. **Hỏi khi cần** — Confidence thấp → Socratic clarification
+- **Before Implementation (Phase 3):**
+  Check `security-modes.yaml` (Cấp độ Paranoid của Beginner sẽ yêu cầu hỏi User trước khi chạy terminal).
+- **Before Output:** Kiểm tra PII/Data Leak.

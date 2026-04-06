@@ -33,3 +33,20 @@ Mỗi khi Agent ghi xong file quan trọng vào thư mục `docs/` (như `resear
 - Tham số `title`: Tên file (VD: spec.md)
 - Tham số `text`: Toàn bộ nội dung file vừa viết.
 Thao tác này đảm bảo bộ não dự án luôn được làm giàu tự động (Multiplication Effect).
+
+## 6. PII Scan Trước Khi Sync Brain (Guardrail)
+
+**TRƯỚC KHI** gọi `mcp_notebooklm_notebook_add_text`, Agent **BẮT BUỘC** scan nội dung cho PII:
+
+| Pattern | Ví dụ | Xử lý |
+|---------|-------|--------|
+| Họ tên cá nhân (non-public) | "Nguyễn Văn A" | Thay bằng "Học sinh A" hoặc "[REDACTED]" |
+| Số điện thoại | 0901234567 | Xóa hoặc mask: 090***4567 |
+| Email cá nhân | a@gmail.com | Xóa hoặc mask: a***@gmail.com |
+| Số CMND/CCCD | 012345678901 | KHÔNG sync — bỏ qua |
+| Mật khẩu/API key | sk-abc123... | KHÔNG sync — bỏ qua |
+
+**Quy tắc:**
+- File chứa **danh sách học sinh** (tên, điểm, SĐT phụ huynh) → **KHÔNG auto-sync**. Hỏi User: "File chứa dữ liệu cá nhân học sinh. Bạn muốn sync phiên bản đã anonymize không?"
+- File chỉ chứa **architecture, specs, policy** → Auto-sync bình thường
+- Khi nghi ngờ → **hỏi User** thay vì auto-sync

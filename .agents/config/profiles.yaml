@@ -1,0 +1,49 @@
+# =============================================================================
+# SKL AGENT KIT User Profiles Configuration
+# =============================================================================
+# Định nghĩa các cấp độ tương tác (Behavioral presets) dựa trên Profile User.
+# Default (khi chưa rõ) là: beginner
+# =============================================================================
+
+default_profile: beginner
+
+profiles:
+  beginner:
+    # An toàn tối đa, luôn yêu cầu User confirm trước khi chạy lệnh
+    # Tương ứng `paranoid` type trong security-modes.yaml
+    security_mode: paranoid
+    
+    # Giải thích chi tiết các bước sẽ làm, không dùng thuật ngữ AI phức tạp (trừ khi cần)
+    explanation_level: detailed
+    
+    # Sau mỗi công việc hoàn thành, Agent sẽ đề xuất bước tiếp theo cụ thể
+    auto_suggest: true
+    
+    # Số lượng sub-agent tối đa chạy song song (hạn chế để tránh ngợp)
+    max_workers: 2
+
+  intermediate:
+    # Cân bằng giữa tốc độ và giám sát
+    security_mode: standard
+    
+    # Giải thích ngắn gọn lý do
+    explanation_level: concise
+    
+    # Chỉ gợi ý khi có lỗi hoặc khi chuyển context lớn
+    auto_suggest: on_error
+    
+    # Số lượng sub-agent tối đa chạy song song
+    max_workers: 5
+
+  expert:
+    # Cho phép tự động hoá tối đa (nếu được cấp quyền), tập trung kết quả
+    security_mode: agile
+    
+    # Chỉ đưa ra diff, code, hoặc status; không rườm rà
+    explanation_level: minimal
+    
+    # Tắt gợi ý chèo lái, vì Expert biết họ muốn gì
+    auto_suggest: false
+    
+    # Max sức mạnh multi-agent chạy song song
+    max_workers: 10

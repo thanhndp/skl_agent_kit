@@ -5,11 +5,33 @@
 
 default_router: "standard_pipeline"
 
+# ─── Tier Mapping (referenced by cost-control.yaml) ────────────────────────
+# cost-control.yaml selects tier by intent complexity → this maps tier to model
+tier_mapping:
+  tier1:
+    description: "Fast, cheap — simple QA, formatting"
+    model: "gemini-2.5-flash"
+    provider: "google-aistudio"
+  tier2:
+    description: "Standard — knowledge queries, analysis, action"
+    model: "gemini-2.5-flash"
+    provider: "google-aistudio"
+  tier3:
+    description: "Strong reasoning — multi-step, complex analysis"
+    model: "gemini-2.5-pro"
+    provider: "google-aistudio"
+  tier4:
+    description: "Critical — architecture, security, long-context"
+    model: "claude-opus-4"
+    provider: "openrouter"
+
+# ─── Routers ───────────────────────────────────────────────────────────────
+
 routers:
   standard_pipeline:
     description: "Default routing rule for standard operations. Prioritizes Gemini Flash, falls back to OpenRouter."
     
-    # Tier 1: Primary Model (Fast, Cost-Effective)
+    # Tier 1-2: Primary Model (Fast, Cost-Effective)
     primary:
       provider: "google-aistudio"
       model: "gemini-2.5-flash"
@@ -23,7 +45,7 @@ routers:
         - "RESOURCE_EXHAUSTED"
         - "503"
         
-    # Tier 2: First Fallback (OpenRouter)
+    # Tier 2 Fallback: OpenRouter Flash
     fallback_1:
       provider: "openrouter"
       model: "google/gemini-2.5-flash"
@@ -31,6 +53,26 @@ routers:
       retry_attempts: 3
       retry_delay: 5
       timeout: 60
+      fallback_on_errors: ["*"]
+
+    # Tier 3: Strong Reasoning (auto-selected by cost-control)
+    fallback_2:
+      provider: "google-aistudio"
+      model: "gemini-2.5-pro"
+      api_key_env: "GOOGLE_API_KEY"
+      retry_attempts: 2
+      retry_delay: 10
+      timeout: 120
+      fallback_on_errors: ["429", "RESOURCE_EXHAUSTED"]
+
+    # Tier 4: Critical Tasks (auto-selected by cost-control)
+    fallback_3:
+      provider: "openrouter"
+      model: "anthropic/claude-opus-4"
+      api_key_env: "OPENROUTER_API_KEY"
+      retry_attempts: 2
+      retry_delay: 5
+      timeout: 180
       fallback_on_errors: ["*"]
 
 providers:
@@ -41,3 +83,4 @@ providers:
     headers:
       "HTTP-Referer": "https://skylineschool.edu.vn"
       "X-Title": "SKL AGENT KIT Framework"
+
