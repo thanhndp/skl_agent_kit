@@ -1,6 +1,6 @@
 # 🧠 SKL AGENT KIT — AI Framework Template
 
-> **Phiên bản:** 3.5 · Cập nhật: 2026-03-31
+> **Phiên bản:** 4.0 · Cập nhật: 2026-04-06
 > Bộ khung AI Orchestration dùng cho mọi dự án **Data Pipeline** hoặc **App Development**.
 
 `skl_agent_kit` đóng gói Best Practices từ các hệ thống Agent hàng đầu (Antigravity SDK, Gstack, AutoResearchClaw, Skill Generator) thành một **template scaffolding** dùng lại cho mọi dự án.
@@ -49,6 +49,9 @@ antigravity        # 🚀 Triệu hồi Antigravity IDE (Mặc định)
 | 📦 **Cache** | 3-layer cache (query/tool/context) — giảm 50-80% cost cho queries lặp lại |
 | 🔧 **Error Handling** | Retry 2x + 4 fallback chains + graceful degradation matrix |
 | 👤 **Human-in-the-Loop** | Education guards: confirm trước khi sửa điểm, gửi PH, xóa file |
+| 🆕 **Socratic Onboarding** | Tự phân loại User profile (Beginner/Intermediate/Expert) + hướng dẫn thích ứng |
+| 🗜️ **Context Compressor** | Auto-detect context bloat → nén bằng summarization, artifact reference, memory offloading |
+| 🚀 **Multi-Agent Workers** | `/spawn-workers` — phân tách task thành N worker song song qua CMD |
 
 ---
 
@@ -134,7 +137,7 @@ User Task → Agent → Cần domain knowledge?
 
 ---
 
-## ⚙️ Execution Engine (v3.5)
+## ⚙️ Execution Engine (v4.0)
 
 Mọi task đi qua pipeline 12 bước:
 
@@ -202,49 +205,67 @@ Script tự động `git pull` để lấy thay đổi mới nhất, **chỉ c�
 ```
 SKL_AGENT_KIT/
 ├── .agents/                       # 🧠 Bộ não AI
-│   ├── config/
+│   ├── config/                    # ⚙️ 8 config files
 │   │   ├── model-routing.yaml     # Dynamic Routing (Tier 1→4) + notifications
 │   │   ├── brain.yaml             # Brain config (NotebookLM)
-│   │   ├── capabilities.yaml     # 🔗 7 capabilities + composition engine
-│   │   ├── cost-control.yaml     # 💰 Dynamic budget + model selection
-│   │   ├── webhooks.yaml         # n8n/automation bridge
-│   │   └── agents.yaml           # Multi-agent config
+│   │   ├── capabilities.yaml      # 🔗 7 capabilities + composition engine
+│   │   ├── cost-control.yaml      # 💰 Dynamic budget + model selection
+│   │   ├── profiles.yaml          # 👤 User profiles (beginner/intermediate/expert)
+│   │   ├── security-modes.yaml    # 🔒 Security modes by profile
+│   │   ├── webhooks.yaml          # n8n/automation bridge
+│   │   └── agents.yaml            # Multi-agent config
 │   ├── runtime/                   # ⚙️ Engine + Plugins
-│   │   ├── execution-engine.yaml # Central pipeline (12 steps)
-│   │   ├── observability.yaml   # 📊 Metrics + log points
-│   │   └── cache.yaml           # 📦 3-layer cache (query/tool/context)
-│   ├── rules/                     # 15 quy tắc Agent tuân thủ
-│   │   ├── orchestrator.md       # Multi-intent + execution plan
-│   │   ├── instruction-layer.md  # 4-priority instruction system
-│   │   ├── state-machine.md      # Agent state transitions
-│   │   ├── context-builder.md    # Adaptive budget + dedup + ranking
+│   │   ├── execution-engine.yaml  # Central pipeline (12 steps)
+│   │   ├── observability.yaml     # 📊 Metrics + log points
+│   │   └── cache.yaml             # 📦 3-layer cache (query/tool/context)
+│   ├── rules/                     # 📏 17 quy tắc Agent tuân thủ
+│   │   ├── orchestrator.md        # Multi-intent + execution plan
+│   │   ├── instruction-layer.md   # 4-priority instruction system
+│   │   ├── state-machine.md       # Agent state transitions
+│   │   ├── context-builder.md     # Adaptive budget + dedup + ranking
+│   │   ├── context-compressor.md  # 🆕 Auto context compression
 │   │   ├── brain-connector.md     # Brain query rules (auto/ask/off)
-│   │   ├── memory-protocol.md    # Memory decay + conflict + confidence
-│   │   ├── knowledge-tiers.md    # Static/Dynamic/Personal + fallback
-│   │   ├── permission-guard.md   # Data protection 3 lớp
-│   │   ├── feedback-logger.md    # Closed-loop feedback
-│   │   ├── error-handling.md     # 🔧 Retry + fallback + degradation
-│   │   ├── human-loop.md         # 👤 Confirm cho action nhạy cảm
+│   │   ├── memory-protocol.md     # Memory decay + conflict + confidence
+│   │   ├── knowledge-tiers.md     # Static/Dynamic/Personal + fallback
+│   │   ├── permission-guard.md    # Data protection 3 lớp
+│   │   ├── feedback-logger.md     # Closed-loop feedback
+│   │   ├── error-handling.md      # 🔧 Retry + fallback + degradation
+│   │   ├── human-loop.md          # 👤 Confirm cho action nhạy cảm
+│   │   ├── onboarding.md          # 🆕 Socratic Onboarding Protocol
 │   │   ├── safety-guard.md        # /freeze, /careful, READ-ONLY
-│   │   ├── data-handoff.md        # No File No Trust
-│   │   ├── coding-standards.md
-│   │   └── skill-development.md
+│   │   ├── data-handoff.md        # No File No Trust + PII Scan
+│   │   ├── coding-standards.md    # Code quality + Windows .bat rules
+│   │   └── skill-development.md   # 7 Nguyên tắc Skill hoàn hảo
 │   ├── memory/                    # Entity Memory
-│   │   └── entities.yaml         # User profiles, context notes
-│   ├── skills/
-│   │   ├── excel-professional/
-│   │   └── viet-chuyen-nghiep/
-│   └── workflows/                 # 13 slash commands
+│   │   └── entities.yaml          # User profiles, context notes
+│   ├── skills/                    # 🧩 2 built-in skills
+│   │   ├── excel-professional/    # Xử lý Excel chuẩn doanh nghiệp
+│   │   └── viet-chuyen-nghiep/    # Viết tiếng Việt chuyên nghiệp
+│   ├── templates/                 # 📐 Code templates
+│   │   └── base_parallel_engine.py
+│   └── workflows/                 # 📋 16 slash commands
 │       ├── brain-bootstrap.md     # /brain-bootstrap
 │       ├── brain-sync.md          # /brain-sync
 │       ├── best-practices.md      # /best-practices
+│       ├── data-ingest.md         # 🆕 /data-ingest
+│       ├── data-process.md        # 🆕 /data-process
 │       ├── load-skills.md         # /load-skills
 │       ├── project-status.md      # /project-status
-│       └── skill-*.md             # /skill-generate, audit...
+│       ├── spawn-workers.md       # 🆕 /spawn-workers
+│       └── skill-*.md             # 8 skill lifecycle commands
+├── docs/
+│   ├── architecture/              # 3 ADRs
+│   └── skill_extension_integration_guide.md
 ├── libs/
 │   └── notebooklm-mcp-hybrid-v1.0.zip
+├── tests/
+│   ├── check_refs.py
+│   ├── validate_config.py
+│   └── simulation.md
 ├── setup.bat / setup.sh
 ├── update.bat / update.sh
+├── ARCHITECTURE.md
+├── CONTRIBUTING.md
 └── README.md
 ```
 
@@ -276,7 +297,7 @@ SKL_AGENT_KIT/
 
 ---
 
-## ⚡ Slash Commands
+## ⚡ Slash Commands (16)
 
 ### 🧠 Brain Commands
 
@@ -292,6 +313,14 @@ SKL_AGENT_KIT/
 | `/best-practices` | Tra cứu best practices |
 | `/load-skills` | Nạp skill theo loại dự án |
 | `/project-status` | Xem tổng quan dự án |
+
+### 📊 Data Commands
+
+| Command | Mô tả |
+|---------|-------|
+| `/data-ingest` | Quét `1_input/`, OCR ảnh, đẩy Text lên Brain, lọc Excel |
+| `/data-process` | Viết mã phân tích dữ liệu theo kiến trúc Map-Reduce chống tràn RAM |
+| `/spawn-workers` | Phân tách task thành N worker song song (Multi-Agent) |
 
 ### 📦 Skill Commands
 
@@ -310,7 +339,7 @@ SKL_AGENT_KIT/
 
 ## 📖 Tài Liệu
 
-### Core
+### Core (17 Rules)
 
 | Tài liệu | Nội dung |
 |-----------|----------|
@@ -319,15 +348,21 @@ SKL_AGENT_KIT/
 | [Instruction Layer](.agents/rules/instruction-layer.md) | 4-priority instruction system |
 | [State Machine](.agents/rules/state-machine.md) | Agent state transitions |
 | [Context Builder](.agents/rules/context-builder.md) | Adaptive budget + dedup + ranking |
+| [Context Compressor](.agents/rules/context-compressor.md) | Auto context compression protocol |
 | [Brain Connector](.agents/rules/brain-connector.md) | Brain query rules (auto/ask/off) |
 | [Memory Protocol](.agents/rules/memory-protocol.md) | Decay + conflict + confidence |
 | [Knowledge Tiers](.agents/rules/knowledge-tiers.md) | Static/Dynamic/Personal + fallback |
 | [Capabilities](.agents/config/capabilities.yaml) | 7 capabilities + composition engine |
 | [Feedback Logger](.agents/rules/feedback-logger.md) | Closed-loop feedback |
 | [Safety Guard](.agents/rules/safety-guard.md) | /freeze, /careful, READ-ONLY |
+| [Permission Guard](.agents/rules/permission-guard.md) | Data protection 3 lớp |
+| [Data Handoff](.agents/rules/data-handoff.md) | No File No Trust + PII Scan |
+| [Onboarding](.agents/rules/onboarding.md) | Socratic Onboarding Protocol |
 | [Model Routing](.agents/config/model-routing.yaml) | Dynamic Model Selection (Tier 1→4) |
+| [Coding Standards](.agents/rules/coding-standards.md) | Code quality + .bat safety rules |
+| [Skill Development](.agents/rules/skill-development.md) | 7 Nguyên tắc Skill hoàn hảo |
 
-### Plugins (v3.5)
+### Plugins (v4.0)
 
 | Tài liệu | Nội dung |
 |-----------|----------|
@@ -337,9 +372,31 @@ SKL_AGENT_KIT/
 | [Error Handling](.agents/rules/error-handling.md) | Retry + 4 fallback chains |
 | [Human Loop](.agents/rules/human-loop.md) | Education-specific confirm guards |
 
+### Architecture Decision Records
+
+| ADR | Nội dung |
+|-----|----------|
+| [ADR-001](docs/architecture/adr-001-config-over-code.md) | Config-over-Code philosophy |
+| [ADR-002](docs/architecture/adr-002-notebooklm-memory.md) | NotebookLM as Long-Term Memory |
+| [ADR-003](docs/architecture/adr-003-single-user-focus.md) | Single-User focus design |
+
 ---
 
 ## 📝 Changelog
+
+### v4.0 (2026-04-06)
+**Core:**
+- 🆕 Onboarding Protocol — Socratic Interview tự phân loại User profile
+- 🆕 Context Compressor — Auto-detect context bloat + 3 compression strategies
+- 🆕 User Profiles — `profiles.yaml` với 3 levels (beginner/intermediate/expert)
+- 🆕 Security Modes — `security-modes.yaml` theo profile
+
+**Workflows:**
+- 🆕 `/data-ingest` — Auto-ingest pipeline (OCR, Brain sync, Excel filter)
+- 🆕 `/data-process` — Map-Reduce data processing architecture
+- 🆕 `/spawn-workers` — Multi-agent parallel task execution (Windows CMD)
+- ⬆️ Rules: 15 → **17** quy tắc
+- ⬆️ Workflows: 13 → **16** slash commands
 
 ### v3.5 (2026-03-31)
 **Core:**
