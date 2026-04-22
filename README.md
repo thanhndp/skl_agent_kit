@@ -254,7 +254,10 @@ SKL_AGENT_KIT/
 │       ├── spawn-workers.md       # 🆕 /spawn-workers
 │       └── skill-*.md             # 8 skill lifecycle commands
 ├── docs/
-│   ├── architecture/              # 3 ADRs
+│   ├── architecture/
+│   │   ├── adr-001-config-over-code.md    # Config-over-Code philosophy
+│   │   ├── adr-002-notebooklm-memory.md   # NotebookLM as Long-Term Memory
+│   │   └── adr-003-single-user-focus.md   # Single-User focus design
 │   └── skill_extension_integration_guide.md
 ├── libs/
 │   └── notebooklm-mcp-hybrid-v1.0.zip

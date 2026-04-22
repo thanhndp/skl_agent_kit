@@ -30,7 +30,7 @@ tier_mapping:
 routers:
   standard_pipeline:
     description: "Default routing rule for standard operations. Prioritizes Gemini Flash, falls back to OpenRouter."
-    
+
     # Tier 1-2: Primary Model (Fast, Cost-Effective)
     primary:
       provider: "google-aistudio"
@@ -41,10 +41,10 @@ routers:
       timeout: 60
       # Catch quota errors to trigger fallback
       fallback_on_errors:
-        - "429" 
+        - "429"
         - "RESOURCE_EXHAUSTED"
         - "503"
-        
+
     # Tier 2 Fallback: OpenRouter Flash
     fallback_1:
       provider: "openrouter"

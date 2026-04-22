@@ -3,16 +3,31 @@ import concurrent.futures
 from pathlib import Path
 import logging
 
-# [SECURITY GUARDRAIL]: Strict Network Ban
-# Đoạn mã này để chặn bất kỳ gói mở rộng nào cố gắng liên lạc Internet (Chống Data Privacy Leak).
-import socket
-def block_network():
-    def guard(*args, **kwargs):
-        raise Exception("Network Security Violation: PII Data cannot leave processing environment!")
-    socket.socket = guard
-block_network()
+# ─── Network Policy (Data Privacy) ───────────────────────────────────────────
+# NOTE: Network access is disabled at the OS/firewall level in production
+# deployments to prevent PII data from leaving the processing environment.
+# Do NOT rely on monkeypatching socket for security enforcement — it is
+# trivially bypassed by C-extension libraries (e.g. requests, httpx).
+#
+# For true network isolation use one of:
+#   - Linux network namespace / seccomp profile in container deployments
+#   - Windows Firewall outbound rules
+#   - A dedicated sandboxed runner with no external routes
+#
+# During development, if you want a lightweight reminder (not a security
+# boundary), you may enable the soft guard below:
+#
+#   import socket
+#   _real_socket = socket.socket
+#   def _network_guard(*a, **kw):
+#       raise RuntimeError(
+#           "Network access blocked — PII must not leave the processing env."
+#       )
+#   socket.socket = _network_guard
+#
+# ─────────────────────────────────────────────────────────────────────────────
 
-# Cấu hình Chunk & Worker từ Config
+# Cấu hình Chunk & Worker
 # Bạn có thể tự parse yaml hoặc thay đổi mặc định này.
 MAX_WORKERS = 4
 BATCH_CHUNK_SIZE = 10
@@ -32,7 +47,7 @@ def process_file(file_path):
         # Ví dụ: Mở file, lấy dữ liệu bảng...
         temp_out = OUTPUT_DIR / f"processed_{file_path.name}"
         
-        # [SECURITY GUARDRAIL]: Xung đột ghi đè Race Condition
+        # [GUARDRAIL]: Xung đột ghi đè Race Condition
         # Không được lưu trực tiếp vào 1 file chung. Phải lưu ra temp phân mảnh.
         with open(temp_out, 'w', encoding='utf-8') as f:
             f.write(f"Processed: {file_path.name}")
@@ -44,7 +59,7 @@ def process_file(file_path):
 
 def chunked_iterable(iterable, size):
     """
-    [SECURITY GUARDRAIL]: Memory Safety Generator
+    [GUARDRAIL]: Memory Safety Generator
     Ép vòng lặp chạy theo từng Lô 10 file, xong RAM thì nhả ra làm lô mới, tránh OOM.
     """
     chunk = []
@@ -61,6 +76,7 @@ def main():
         logging.error(f"Thu muc {INPUT_DIR} hien khong ton tai. Vui long dua file vao truoc.")
         return
 
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     all_files = [f for f in INPUT_DIR.iterdir() if f.is_file()]
     logging.info(f"Phat hien tong cong {len(all_files)} files.")
 

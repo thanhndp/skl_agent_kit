@@ -15,7 +15,7 @@ entities:
   #   content: "Giáo viên/Người quản lý trường học. Không rành công nghệ sâu."
   #   confidence: 1.0
   #   date: "2026-04-02"
-  
+
   # - type: feedback
   #   name: "Hướng dẫn giải thích"
   #   content: "Rule: Luôn dùng ngôn ngữ dễ hiểu. Why: User không rành kỹ thuật. How to apply: Tránh output raw code cho người mới."

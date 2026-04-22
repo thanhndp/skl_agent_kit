@@ -4,7 +4,7 @@
 export LANG=C.UTF-8
 
 echo "=================================================="
-echo "        SKL AGENT KIT INIT SYSTEM v3.5"
+echo "        SKL AGENT KIT INIT SYSTEM v4.0"
 echo "=================================================="
 echo ""
 echo "Chào mừng bạn đến với SKL AGENT KIT Framework!"
@@ -37,7 +37,12 @@ echo "[2] App Development (Lập trình ứng dụng Web/Node)"
 read -p "Nhập lựa chọn của bạn (1 hoặc 2): " choice
 
 if [ -f "README.md" ]; then
-    mv README.md SKL_AGENT_KIT_README.md 2>/dev/null
+    read -p "README.md đã tồn tại và sẽ được đổi tên thành SKL_AGENT_KIT_README.md. Tiếp tục? (y/N): " confirm_rename
+    if [ "$confirm_rename" == "y" ] || [ "$confirm_rename" == "Y" ]; then
+        mv README.md SKL_AGENT_KIT_README.md 2>/dev/null
+    else
+        echo "Bỏ qua: README.md giữ nguyên."
+    fi
 fi
 
 if [ "$choice" == "1" ]; then
@@ -90,7 +95,13 @@ else
 fi
 
 echo ""
-git remote remove origin 2>/dev/null
+read -p "Xóa git remote origin? Làm vậy sẽ ngắt kết nối clone gốc. (y/N): " confirm_remote
+if [ "$confirm_remote" == "y" ] || [ "$confirm_remote" == "Y" ]; then
+    git remote remove origin 2>/dev/null
+    echo "Đã xóa remote origin."
+else
+    echo "Bỏ qua: remote origin giữ nguyên."
+fi
 echo "=================================================================="
 echo "✨ [THÀNH CÔNG] DỰ ÁN ĐÃ SẴN SÀNG ĐỂ CHẠY CẢ CODE LẪN AI!"
 echo ""

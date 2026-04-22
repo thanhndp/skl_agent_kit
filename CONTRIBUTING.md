@@ -1,5 +1,22 @@
 # 🤝 Contributing to SKL AGENT KIT
 
+> **⚠️ Lưu ý quan trọng:** SKL AGENT KIT là phần mềm **độc quyền** (proprietary).  
+> Repository được công khai tạm thời cho mục đích **review nội bộ** và **kiểm toán** bởi các bên được ủy quyền.  
+> Việc repo public **KHÔNG cấp bất kỳ giấy phép nguồn mở** nào.  
+> Mọi đóng góp (contribution) phải được **thanhndp** phê duyệt trước khi merge.
+
+---
+
+## 📋 Ai Có Thể Đóng Góp?
+
+| Nhóm | Quyền |
+|------|-------|
+| **Maintainer** (`thanhndp`) | Toàn quyền review, merge, release |
+| **Nội bộ Skyline School** | Có thể tạo PR; cần approval từ Maintainer |
+| **Bên ngoài** | Chỉ được báo cáo bug qua Issues; không có quyền PR mà không có thỏa thuận bằng văn bản |
+
+---
+
 Cảm ơn bạn quan tâm đến SKL AGENT KIT! Dưới đây là hướng dẫn đóng góp.
 
 ---
@@ -9,7 +26,8 @@ Cảm ơn bạn quan tâm đến SKL AGENT KIT! Dưới đây là hướng dẫn
 ### 1. Fork & Clone
 
 ```bash
-git fork https://github.com/thanhndp/skl_agent_kit.git
+# Chỉ dành cho contributors được ủy quyền
+# Fork qua giao diện GitHub UI, sau đó:
 git clone https://github.com/YOUR_USERNAME/skl_agent_kit.git
 cd skl_agent_kit
 ```
@@ -31,7 +49,17 @@ git checkout -b fix/ten-loi
 
 ### 4. Kiểm Tra
 
-Chạy test scenarios (xem [tests/simulation.md](tests/simulation.md)):
+Chạy automated tests trước khi submit PR:
+
+```bash
+# Kiểm tra toàn vẹn tài liệu (broken links)
+python tests/check_refs.py
+
+# Kiểm tra YAML configs + file presence
+python tests/validate_config.py
+```
+
+Sau đó chạy manual test scenarios nếu thay đổi liên quan đến behavior (xem [tests/simulation.md](tests/simulation.md)):
 
 ```bash
 # Mở project trong AI IDE (Antigravity/Cursor)
@@ -52,6 +80,8 @@ Tạo Pull Request trên GitHub với mô tả:
 - **Why:** Tại sao cần
 - **How:** Cơ chế hoạt động
 - **Test:** Đã test scenario nào
+
+> **Quan trọng:** Mọi PR từ bên ngoài tổ chức Skyline School cần kèm theo thỏa thuận đóng góp (CLA) bằng văn bản trước khi được xem xét.
 
 ---
 

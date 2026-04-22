@@ -44,6 +44,52 @@ SKL AGENT KIT **KHÔNG phải** một ứng dụng chạy độc lập. Nó là 
 
 ---
 
+## 🗺️ IDE Compatibility Matrix
+
+> **Thiết lập tối thiểu cho từng IDE** — bao gồm bước cụ thể và giới hạn cần biết.
+
+| IDE | Rules file được đọc | Skills tự động | Workflows (slash cmds) | NotebookLM MCP | Giới hạn |
+|-----|---------------------|----------------|-----------------------|----------------|----------|
+| **Antigravity** (v4.0.4+) | `.agents/` toàn bộ | ✅ Tự động | ✅ Đầy đủ 16 lệnh | ✅ Tích hợp sẵn | Không có — đây là IDE chính |
+| **Cursor** | `.cursorrules` | ⚠️ Thủ công | ❌ Không có slash cmd | ✅ Nếu cấu hình MCP | Không đọc `.agents/` trực tiếp |
+| **Windsurf** | `.windsurfrules` | ⚠️ Thủ công | ❌ Không có slash cmd | ✅ Nếu cấu hình MCP | Không đọc `.agents/` trực tiếp |
+| **Claude Code** | `.clauderules` hoặc `CLAUDE.md` | ⚠️ Thủ công | ❌ Không có slash cmd | ✅ Nếu cấu hình MCP | Không đọc `.agents/` trực tiếp |
+
+### Cursor — Thiết lập tối thiểu
+
+1. Mở project root trong Cursor.
+2. File `.cursorrules` đã có sẵn trong repo — Cursor tự đọc khi khởi động.
+3. Để nạp rules đầy đủ, thêm nội dung `.agents/rules/*.md` vào `.cursorrules`:
+   ```bash
+   cat .agents/rules/*.md >> .cursorrules
+   ```
+4. Cấu hình NotebookLM MCP (tùy chọn) qua `Settings > MCP` trong Cursor.
+5. **Giới hạn:** Không có slash commands; không tự động load skills theo project type.
+
+### Windsurf — Thiết lập tối thiểu
+
+1. Mở project root trong Windsurf.
+2. File `.windsurfrules` đã có sẵn trong repo — Windsurf tự đọc khi khởi động.
+3. Để nạp rules đầy đủ:
+   ```bash
+   cat .agents/rules/*.md >> .windsurfrules
+   ```
+4. Cấu hình NotebookLM MCP qua `Settings > AI > MCP Servers`.
+5. **Giới hạn:** Không có slash commands; skills phải được nhắc thủ công trong chat.
+
+### Claude Code — Thiết lập tối thiểu
+
+1. Mở project root bằng `claude` CLI.
+2. File `.clauderules` đã có sẵn trong repo — Claude Code tự đọc.
+3. Để nạp toàn bộ rules vào một file `CLAUDE.md`:
+   ```bash
+   cat .agents/rules/*.md > CLAUDE.md
+   ```
+4. Cấu hình NotebookLM MCP qua `claude mcp add notebooklm -- python -m notebooklm_mcp_hybrid.server`.
+5. **Giới hạn:** Không có slash commands; không tự động routing model theo tier.
+
+---
+
 ## 🧠 Cơ Chế Hoạt Động
 
 ### 1. Boot Sequence (Khi mở project)

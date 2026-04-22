@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 chcp 65001 >nul
 
 echo ==================================================
-echo         SKL AGENT KIT INIT SYSTEM v3.5
+echo         SKL AGENT KIT INIT SYSTEM v4.0
 echo ==================================================
 echo.
 echo Chao mung ban den voi SKL AGENT KIT Framework!
@@ -19,13 +19,15 @@ if "%profile%"=="2" (
     set profile_desc=Giao vien/Quan ly. Khong ranh code. Can giai thich step-by-step. Profile: beginner.
 )
 
-:: Khoi tao Memory cho AI vao Entities.yaml
+:: Khoi tao Memory cho AI vao Entities.yaml (date dong theo he thong)
+for /f "tokens=2 delims==" %%I in ('wmic os get localdatetime /value') do set datetime=%%I
+set today_date=%datetime:~0,4%-%datetime:~4,2%-%datetime:~6,2%
 echo entities: > .agents\memory\entities.yaml
 echo   - type: user >> .agents\memory\entities.yaml
 echo     name: "User Profile" >> .agents\memory\entities.yaml
 echo     content: "%profile_desc%" >> .agents\memory\entities.yaml
 echo     confidence: 1.0 >> .agents\memory\entities.yaml
-echo     date: "2026-04-03" >> .agents\memory\entities.yaml
+echo     date: "%today_date%" >> .agents\memory\entities.yaml
 
 echo.
 echo Hay chon mo hinh du an ban muon thiet lap:
@@ -34,7 +36,12 @@ echo [2] App Development (Lap trinh ung dung Web/App)
 set /p choice="Nhap lua chon cua ban (1 hoac 2): "
 
 if exist README.md (
-    ren README.md SKL_AGENT_KIT_README.md 2>nul
+    set /p confirm_rename="README.md ton tai va se duoc doi ten thanh SKL_AGENT_KIT_README.md. Tiep tuc? (y/N): "
+    if /I "!confirm_rename!"=="y" (
+        ren README.md SKL_AGENT_KIT_README.md 2>nul
+    ) else (
+        echo Bo qua: README.md giu nguyen.
+    )
 )
 
 if "%choice%"=="1" (
@@ -87,7 +94,13 @@ if "%choice%"=="1" (
 )
 
 echo.
-git remote remove origin 2>nul
+set /p confirm_remote="Xoa git remote origin? Lam vay se ngat ket noi clone goc. (y/N): "
+if /I "!confirm_remote!"=="y" (
+    git remote remove origin 2>nul
+    echo Da xoa remote origin.
+) else (
+    echo Bo qua: remote origin giu nguyen.
+)
 echo ==================================================================
 echo [THONG BAO THANH CONG] - Project da san sang de RUN!
 echo.
